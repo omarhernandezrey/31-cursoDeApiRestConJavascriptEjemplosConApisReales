@@ -1,72 +1,58 @@
-// Se crea una instancia de Axios con configuración personalizada para conectarse a la API de The Movie DB
+// Se crea una instancia personalizada de Axios con configuración base para la API
 const api = axios.create({
-  baseURL: 'https://api.themoviedb.org/3/', // URL base para todos los endpoints de la API
+  baseURL: 'https://api.themoviedb.org/3/', // Dirección base de la API
   headers: {
-    'Content-Type': 'application/json;charset=utf-8', // Indica que se trabajará con JSON
+    'Content-Type': 'application/json;charset=utf-8', // Formato esperado
   },
   params: {
-    'api_key': API_KEY, // Se incluye la clave de API como parámetro por defecto
+    'api_key': API_KEY, // Parámetro global para autenticación
   },
 });
 
-// Función asincrónica que obtiene las películas en tendencia del día y las muestra en el HTML
+// Función para obtener y renderizar películas en tendencia
 async function getTrendingMoviesPreview() {
-  // Se hace la solicitud al endpoint 'trending/movie/day' usando Axios
-  const { data } = await api('trending/movie/day');
+  const { data } = await api('trending/movie/day'); // Se consulta la API
+  const movies = data.results; // Se extrae la lista de películas
 
-  // Se extraen los resultados de películas desde la respuesta
-  const movies = data.results;
+  trendingMoviesPreviewList.innerHTML = ""; // Se limpia el contenedor antes de insertar nuevas películas
 
-  // Recorremos cada película para crear su representación en el DOM
+  // Por cada película se genera su estructura en el DOM
   movies.forEach(movie => {
-    // Contenedor padre donde se mostrarán todas las películas en tendencia
-    const trendingPreviewMoviesContainer = document.querySelector('#trendingPreview .trendingPreview-movieList');
-    
-    // Se crea un contenedor individual para cada película
     const movieContainer = document.createElement('div');
-    movieContainer.classList.add('movie-container'); // Se asigna la clase para estilos
+    movieContainer.classList.add('movie-container'); // Clase CSS para estilos
 
-    // Se crea el elemento de imagen del póster
     const movieImg = document.createElement('img');
-    movieImg.classList.add('movie-img'); // Clase para estilos
-    movieImg.setAttribute('alt', movie.title); // Texto alternativo (accesibilidad)
+    movieImg.classList.add('movie-img'); // Clase CSS para estilos
+    movieImg.setAttribute('alt', movie.title); // Texto alternativo con el título
     movieImg.setAttribute(
       'src',
       'https://image.tmdb.org/t/p/w300' + movie.poster_path, // Ruta del póster con tamaño w300
     );
 
-    // Se agrega la imagen al contenedor y este al DOM
-    movieContainer.appendChild(movieImg);
-    trendingPreviewMoviesContainer.appendChild(movieContainer);
+    movieContainer.appendChild(movieImg); // Se inserta la imagen en el contenedor
+    trendingMoviesPreviewList.appendChild(movieContainer); // Se inserta el contenedor en la lista principal
   });
 }
 
-// Función asincrónica que obtiene las categorías de películas y las muestra en el HTML
+// Función para obtener y renderizar las categorías de películas
 async function getCategegoriesPreview() {
-  // Se hace la solicitud al endpoint de géneros
-  const { data } = await api('genre/movie/list');
+  const { data } = await api('genre/movie/list'); // Se consulta el endpoint de géneros
+  const categories = data.genres; // Se extrae la lista de géneros
 
-  // Se extraen las categorías desde la respuesta
-  const categories = data.genres;
+  categoriesPreviewList.innerHTML = ""; // Se limpia el contenedor antes de insertar nuevas categorías
 
-  // Recorremos cada categoría para crear su representación en el DOM
+  // Por cada categoría se genera su estructura en el DOM
   categories.forEach(category => {
-    // Contenedor padre donde se mostrarán todas las categorías
-    const previewCategoriesContainer = document.querySelector('#categoriesPreview .categoriesPreview-list');
-    
-    // Se crea un contenedor individual para cada categoría
     const categoryContainer = document.createElement('div');
     categoryContainer.classList.add('category-container'); // Clase para estilos
 
-    // Se crea el título de la categoría
     const categoryTitle = document.createElement('h3');
     categoryTitle.classList.add('category-title'); // Clase para estilos
-    categoryTitle.setAttribute('id', 'id' + category.id); // Se asigna un ID con base en el ID de la categoría
-    const categoryTitleText = document.createTextNode(category.name); // Texto con el nombre del género
+    categoryTitle.setAttribute('id', 'id' + category.id); // ID único para el título
+    const categoryTitleText = document.createTextNode(category.name); // Texto del nombre de la categoría
 
-    // Se arma la estructura HTML e inserta en el DOM
-    categoryTitle.appendChild(categoryTitleText);
-    categoryContainer.appendChild(categoryTitle);
-    previewCategoriesContainer.appendChild(categoryContainer);
+    categoryTitle.appendChild(categoryTitleText); // Se inserta el texto en el título
+    categoryContainer.appendChild(categoryTitle); // Se inserta el título en el contenedor
+    categoriesPreviewList.appendChild(categoryContainer); // Se inserta el contenedor en la lista principal
   });
 }
