@@ -1,187 +1,173 @@
-// EVENTOS DE NAVEGACIÓN BASADOS EN BOTONES Y CAMBIOS EN LA URL
+// ============ EVENTOS DE NAVEGACIÓN ============
 
-// Al hacer clic en el botón de búsqueda, se cambia el hash para activar la página de búsqueda
+// Botón de búsqueda: actualiza el hash con el valor del input para activar la vista de búsqueda
 searchFormBtn.addEventListener('click', () => {
-  location.hash = '#search=';
+  location.hash = '#search=' + searchFormInput.value;
 });
 
-// Al hacer clic en el botón de ver más tendencias, se cambia el hash para activar la página de tendencias
+// Botón de ver más tendencias: actualiza el hash para activar la vista de tendencias
 trendingBtn.addEventListener('click', () => {
   location.hash = '#trends';
 });
 
-// Al hacer clic en la flecha de retroceso, se vuelve al home
+// Botón de flecha hacia atrás: regresa a la vista principal
 arrowBtn.addEventListener('click', () => {
   location.hash = '#home';
 });
 
-// Se ejecuta la función navigator cuando se carga el DOM por primera vez
+// Al cargar la página o al cambiar el hash, se ejecuta la navegación
 window.addEventListener('DOMContentLoaded', navigator, false);
-
-// Se ejecuta la función navigator cada vez que cambia el hash en la URL
 window.addEventListener('hashchange', navigator, false);
 
-// FUNCIÓN DE RUTEO PRINCIPAL QUE ACTIVA LA PÁGINA SEGÚN EL HASH
-function navigator() {
-  console.log({ location }); // Muestra la URL actual en consola para depuración
 
-  // Dependiendo del hash, se llama a la función correspondiente
+// ============ FUNCIÓN DE NAVEGACIÓN PRINCIPAL ============
+
+function navigator() {
+  console.log({ location }); // Muestra la URL actual para depuración
+
+  // Se determina qué vista cargar según el hash de la URL
   if (location.hash.startsWith('#trends')) {
-    trendsPage(); // Página de tendencias
+    trendsPage();
   } else if (location.hash.startsWith('#search=')) {
-    searchPage(); // Página de búsqueda
+    searchPage();
   } else if (location.hash.startsWith('#movie=')) {
-    movieDetailsPage(); // Página de detalles de película
+    movieDetailsPage();
   } else if (location.hash.startsWith('#category=')) {
-    categoriesPage(); // Página de categorías
+    categoriesPage();
   } else {
-    homePage(); // Página principal
+    homePage();
   }
 
-  // Hace scroll automático hacia arriba cada vez que cambia de vista
+  // Se asegura de que la vista siempre comience desde arriba
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
 
-// VISTA PRINCIPAL (HOME)
+
+// ============ VISTAS ============
+
+// VISTA PRINCIPAL
 function homePage() {
   console.log('Home!!');
 
-  // Configuración del header para vista corta (no alargado)
+  // Reset visual del header
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
 
-  // Se oculta la flecha de retroceso y se restablecen los estilos
+  // Se oculta flecha de retroceso y se muestran encabezado e input
   arrowBtn.classList.add('inactive');
   arrowBtn.classList.remove('header-arrow--white');
-
-  // Se muestra el título principal y se oculta el de categoría
   headerTitle.classList.remove('inactive');
   headerCategoryTitle.classList.add('inactive');
-
-  // Se muestra el formulario de búsqueda
   searchForm.classList.remove('inactive');
 
-  // Se muestran las secciones principales
+  // Se muestran las secciones de inicio
   trendingPreviewSection.classList.remove('inactive');
   categoriesPreviewSection.classList.remove('inactive');
 
-  // Se ocultan las secciones que no corresponden a la vista
+  // Se ocultan las secciones no usadas
   genericSection.classList.add('inactive');
   movieDetailSection.classList.add('inactive');
-
-  // Se cargan películas en tendencia y categorías
+  
+  // Se cargan datos
   getTrendingMoviesPreview();
   getCategegoriesPreview();
 }
 
-// VISTA DE CATEGORÍAS
+// VISTA POR CATEGORÍA
 function categoriesPage() {
   console.log('categories!!');
 
-  // Configuración del header normal
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
 
-  // Se muestra flecha de retroceso
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
 
-  // Se oculta título principal y se muestra título de categoría
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.remove('inactive');
-
-  // Se oculta el formulario de búsqueda
   searchForm.classList.add('inactive');
 
-  // Se ocultan secciones que no aplican y se muestra sección genérica
   trendingPreviewSection.classList.add('inactive');
   categoriesPreviewSection.classList.add('inactive');
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Se extrae el ID y nombre de categoría desde el hash de la URL
+  // Extrae ID y nombre desde el hash, ejemplo: #category=12-Action
   const [_, categoryData] = location.hash.split('=');
   const [categoryId, categoryName] = categoryData.split('-');
 
-  // Se actualiza el texto del encabezado con el nombre de la categoría
+  // Se muestra el nombre de la categoría en el encabezado
   headerCategoryTitle.innerHTML = categoryName;
 
-  // Se cargan las películas asociadas a esa categoría
+  // Se cargan las películas de esa categoría
   getMoviesByCategory(categoryId);
 }
 
-// VISTA DE DETALLE DE UNA PELÍCULA
+// VISTA DE DETALLE DE PELÍCULA
 function movieDetailsPage() {
   console.log('Movie!!');
 
-  // Configura el header largo para mostrar imagen destacada
   headerSection.classList.add('header-container--long');
+  //headerSection.style.background = ''; // (opcional: agregar fondo de imagen de la película)
 
-  // Se muestra la flecha blanca para retroceder
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.add('header-arrow--white');
 
-  // Se ocultan todos los encabezados y el buscador
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.add('inactive');
   searchForm.classList.add('inactive');
 
-  // Se ocultan todas las secciones excepto la de detalle
   trendingPreviewSection.classList.add('inactive');
   categoriesPreviewSection.classList.add('inactive');
   genericSection.classList.add('inactive');
   movieDetailSection.classList.remove('inactive');
 }
 
-// VISTA DE BÚSQUEDA DE PELÍCULAS
+// VISTA DE BÚSQUEDA
 function searchPage() {
   console.log('Search!!');
 
-  // Configura el header normal
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
 
-  // Se muestra la flecha de retroceso
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
 
-  // Se oculta el título principal y se muestra el de categoría (puede adaptarse)
   headerTitle.classList.add('inactive');
-  headerCategoryTitle.classList.remove('inactive');
-
-  // Se muestra el formulario de búsqueda
+  headerCategoryTitle.classList.add('inactive');
   searchForm.classList.remove('inactive');
 
-  // Se muestra la sección genérica y se ocultan las demás
   trendingPreviewSection.classList.add('inactive');
   categoriesPreviewSection.classList.add('inactive');
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
+
+  // Extrae el texto de búsqueda del hash: #search=batman
+  const [_, query] = location.hash.split('=');
+
+  // Se hace la búsqueda y se muestra el resultado
+  getMoviesBySearch(query);
 }
 
 // VISTA DE TENDENCIAS
 function trendsPage() {
   console.log('TRENDS!!');
 
-  // Configura el header normal
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
 
-  // Se muestra la flecha de retroceso
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
 
-  // Se oculta el título principal y se muestra el de categoría (puede adaptarse)
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.remove('inactive');
-
-  // Se oculta el buscador
   searchForm.classList.add('inactive');
 
-  // Se muestra la sección genérica y se ocultan las demás
   trendingPreviewSection.classList.add('inactive');
   categoriesPreviewSection.classList.add('inactive');
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
+
+  // Aquí podrías llamar a getTrendingMovies() si tuvieras una versión completa, no solo el preview
 }
