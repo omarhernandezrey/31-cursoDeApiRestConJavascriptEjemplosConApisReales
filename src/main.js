@@ -1,30 +1,27 @@
 // ============ CONFIGURACIÓN DE AXIOS ============
 
-// Se crea una instancia de Axios con configuración predeterminada para todas las peticiones
 const api = axios.create({
-  baseURL: 'https://api.themoviedb.org/3/', // URL base de TMDB
+  baseURL: 'https://api.themoviedb.org/3/', // Base de la API TMDB
   headers: {
-    'Content-Type': 'application/json;charset=utf-8', // Formato JSON
+    'Content-Type': 'application/json;charset=utf-8', // Se usa JSON como formato
   },
   params: {
-    'api_key': API_KEY, // Se añade la API Key automáticamente a cada request
+    'api_key': API_KEY, // Token de autenticación
   },
 });
 
 
-// ============ UTILIDADES ============
+// ============ FUNCIONES UTILITARIAS ============
 
-// Renderiza una lista de películas dentro del contenedor indicado
+// Crea elementos visuales de películas y les asigna navegación al detalle
 function createMovies(movies, container) {
-  container.innerHTML = ''; // Limpia el contenedor para evitar duplicados
+  container.innerHTML = ''; // Limpia contenido anterior
 
   movies.forEach(movie => {
     const movieContainer = document.createElement('div');
     movieContainer.classList.add('movie-container');
-
-    // Al hacer clic en una película, se actualiza el hash para navegar al detalle
     movieContainer.addEventListener('click', () => {
-      location.hash = '#movie=' + movie.id;
+      location.hash = '#movie=' + movie.id; // Al hacer clic, se navega al detalle
     });
 
     const movieImg = document.createElement('img');
@@ -32,7 +29,7 @@ function createMovies(movies, container) {
     movieImg.setAttribute('alt', movie.title);
     movieImg.setAttribute(
       'src',
-      'https://image.tmdb.org/t/p/w300' + movie.poster_path, // URL con tamaño 300px
+      'https://image.tmdb.org/t/p/w300' + movie.poster_path // Carga imagen del póster
     );
 
     movieContainer.appendChild(movieImg);
@@ -40,9 +37,9 @@ function createMovies(movies, container) {
   });
 }
 
-// Renderiza una lista de categorías con enlaces navegables
+// Crea etiquetas de categorías con navegación por hash
 function createCategories(categories, container) {
-  container.innerHTML = ''; // Limpia el contenedor
+  container.innerHTML = ''; // Limpia contenido anterior
 
   categories.forEach(category => {
     const categoryContainer = document.createElement('div');
@@ -51,10 +48,8 @@ function createCategories(categories, container) {
     const categoryTitle = document.createElement('h3');
     categoryTitle.classList.add('category-title');
     categoryTitle.setAttribute('id', 'id' + category.id);
-
-    // Al hacer clic se actualiza el hash a la categoría correspondiente
     categoryTitle.addEventListener('click', () => {
-      location.hash = `#category=${category.id}-${category.name}`;
+      location.hash = `#category=${category.id}-${category.name}`; // Navega a categoría
     });
 
     const categoryTitleText = document.createTextNode(category.name);
@@ -65,65 +60,63 @@ function createCategories(categories, container) {
 }
 
 
-// ============ LLAMADAS A LA API ============
+// ============ FUNCIONES DE PETICIÓN A LA API ============
 
-// Películas en tendencia para vista previa (home)
+// Películas en tendencia (vista previa para home)
 async function getTrendingMoviesPreview() {
   const { data } = await api('trending/movie/day');
   const movies = data.results;
   console.log(movies);
-
-  createMovies(movies, trendingMoviesPreviewList); // Renderiza en sección de preview
+  createMovies(movies, trendingMoviesPreviewList);
 }
 
-// Categorías para vista previa (home)
+// Lista de categorías (home)
 async function getCategegoriesPreview() {
   const { data } = await api('genre/movie/list');
   const categories = data.genres;
-
-  createCategories(categories, categoriesPreviewList); // Renderiza en sección de categorías
+  createCategories(categories, categoriesPreviewList);
 }
 
-// Películas filtradas por categoría
+// Películas por categoría ID
 async function getMoviesByCategory(id) {
   const { data } = await api('discover/movie', {
     params: {
-      with_genres: id, // Parámetro para filtrar por ID de categoría
+      with_genres: id,
     },
   });
   const movies = data.results;
-
-  createMovies(movies, genericSection); // Renderiza en la sección genérica
+  createMovies(movies, genericSection);
 }
 
-// Películas filtradas por búsqueda
+// Películas por búsqueda (query)
 async function getMoviesBySearch(query) {
   const { data } = await api('search/movie', {
     params: {
-      query, // Texto ingresado por el usuario
+      query,
     },
   });
   const movies = data.results;
-
-  createMovies(movies, genericSection); // Muestra los resultados de la búsqueda
+  createMovies(movies, genericSection);
 }
 
-// Todas las películas en tendencia (vista completa)
+// Películas en tendencia (vista completa)
 async function getTrendingMovies() {
   const { data } = await api('trending/movie/day');
   const movies = data.results;
-
-  createMovies(movies, genericSection); // Muestra en sección genérica
+  createMovies(movies, genericSection);
 }
 
-// Película individual por ID (detalle)
-async function getMovieById(id) {
-  const { data: movie } = await api('movie/' + id); // Petición al endpoint específico por ID
+// ============ ENDPOINT DE DETALLES DE UNA PELÍCULA ============
 
-  // Imagen de fondo del header con gradiente oscuro
+async function getMovieById(id) {
+  // Petición al endpoint específico con el ID de la película
+  const { data: movie } = await api('movie/' + id);
+
+  // Imagen de fondo del header (formato grande)
   const movieImgUrl = 'https://image.tmdb.org/t/p/w500' + movie.poster_path;
   console.log(movieImgUrl);
 
+  // Se aplica el fondo con gradiente y poster
   headerSection.style.background = `
     linear-gradient(
       180deg,
@@ -133,11 +126,21 @@ async function getMovieById(id) {
     url(${movieImgUrl})
   `;
 
-  // Datos de la película
+  // Se rellenan los textos del detalle
   movieDetailTitle.textContent = movie.title;
   movieDetailDescription.textContent = movie.overview;
   movieDetailScore.textContent = movie.vote_average;
 
-  // Renderiza las categorías asociadas a la película
+  // Se listan los géneros como etiquetas
   createCategories(movie.genres, movieDetailCategoriesList);
+
+  // También se obtienen películas relacionadas
+  getRelatedMoviesId(id);
+}
+
+// Películas recomendadas relacionadas a la actual
+async function getRelatedMoviesId(id) {
+  const { data } = await api(`movie/${id}/recommendations`);
+  const relatedMovies = data.results;
+  createMovies(relatedMovies, relatedMoviesContainer);
 }
