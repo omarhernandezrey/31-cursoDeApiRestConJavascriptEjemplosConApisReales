@@ -1,58 +1,87 @@
-// Se crea una instancia personalizada de Axios con configuración base para la API
+// Se crea instancia de Axios para conectarse con la API de The Movie Database
 const api = axios.create({
-  baseURL: 'https://api.themoviedb.org/3/', // Dirección base de la API
+  baseURL: 'https://api.themoviedb.org/3/', // URL base para todos los endpoints
   headers: {
-    'Content-Type': 'application/json;charset=utf-8', // Formato esperado
+    'Content-Type': 'application/json;charset=utf-8', // Se define el tipo de contenido
   },
   params: {
-    'api_key': API_KEY, // Parámetro global para autenticación
+    'api_key': API_KEY, // Clave de autenticación para todas las peticiones
   },
 });
 
-// Función para obtener y renderizar películas en tendencia
+// Función que obtiene las películas en tendencia y evita carga duplicada limpiando el contenedor
 async function getTrendingMoviesPreview() {
-  const { data } = await api('trending/movie/day'); // Se consulta la API
-  const movies = data.results; // Se extrae la lista de películas
+  const { data } = await api('trending/movie/day'); // Solicitud a endpoint de películas del día
+  const movies = data.results;
 
-  trendingMoviesPreviewList.innerHTML = ""; // Se limpia el contenedor antes de insertar nuevas películas
+  trendingMoviesPreviewList.innerHTML = ""; // Previene duplicados limpiando el contenedor antes de insertar
 
-  // Por cada película se genera su estructura en el DOM
   movies.forEach(movie => {
     const movieContainer = document.createElement('div');
-    movieContainer.classList.add('movie-container'); // Clase CSS para estilos
+    movieContainer.classList.add('movie-container');
 
     const movieImg = document.createElement('img');
-    movieImg.classList.add('movie-img'); // Clase CSS para estilos
-    movieImg.setAttribute('alt', movie.title); // Texto alternativo con el título
+    movieImg.classList.add('movie-img');
+    movieImg.setAttribute('alt', movie.title);
     movieImg.setAttribute(
       'src',
-      'https://image.tmdb.org/t/p/w300' + movie.poster_path, // Ruta del póster con tamaño w300
+      'https://image.tmdb.org/t/p/w300' + movie.poster_path,
     );
 
-    movieContainer.appendChild(movieImg); // Se inserta la imagen en el contenedor
-    trendingMoviesPreviewList.appendChild(movieContainer); // Se inserta el contenedor en la lista principal
+    movieContainer.appendChild(movieImg);
+    trendingMoviesPreviewList.appendChild(movieContainer);
   });
 }
 
-// Función para obtener y renderizar las categorías de películas
+// Función que obtiene y muestra categorías, y previene carga duplicada limpiando antes
 async function getCategegoriesPreview() {
-  const { data } = await api('genre/movie/list'); // Se consulta el endpoint de géneros
-  const categories = data.genres; // Se extrae la lista de géneros
+  const { data } = await api('genre/movie/list');
+  const categories = data.genres;
 
-  categoriesPreviewList.innerHTML = ""; // Se limpia el contenedor antes de insertar nuevas categorías
+  categoriesPreviewList.innerHTML = ""; // Limpieza del contenedor para evitar duplicados
 
-  // Por cada categoría se genera su estructura en el DOM
   categories.forEach(category => {
     const categoryContainer = document.createElement('div');
-    categoryContainer.classList.add('category-container'); // Clase para estilos
+    categoryContainer.classList.add('category-container');
 
     const categoryTitle = document.createElement('h3');
-    categoryTitle.classList.add('category-title'); // Clase para estilos
-    categoryTitle.setAttribute('id', 'id' + category.id); // ID único para el título
-    const categoryTitleText = document.createTextNode(category.name); // Texto del nombre de la categoría
+    categoryTitle.classList.add('category-title');
+    categoryTitle.setAttribute('id', 'id' + category.id);
+    categoryTitle.addEventListener('click', () => {
+      location.hash = `#category=${category.id}-${category.name}`; // Navega a la categoría
+    });
 
-    categoryTitle.appendChild(categoryTitleText); // Se inserta el texto en el título
-    categoryContainer.appendChild(categoryTitle); // Se inserta el título en el contenedor
-    categoriesPreviewList.appendChild(categoryContainer); // Se inserta el contenedor en la lista principal
+    const categoryTitleText = document.createTextNode(category.name);
+    categoryTitle.appendChild(categoryTitleText);
+    categoryContainer.appendChild(categoryTitle);
+    categoriesPreviewList.appendChild(categoryContainer);
+  });
+}
+
+// Función que obtiene películas por categoría y evita carga duplicada limpiando el contenedor
+async function getMoviesByCategory(id) {
+  const { data } = await api('discover/movie', {
+    params: {
+      with_genres: id, // Filtro por género
+    },
+  });
+  const movies = data.results;
+
+  genericSection.innerHTML = ""; // Previene duplicados limpiando el contenedor
+
+  movies.forEach(movie => {
+    const movieContainer = document.createElement('div');
+    movieContainer.classList.add('movie-container');
+
+    const movieImg = document.createElement('img');
+    movieImg.classList.add('movie-img');
+    movieImg.setAttribute('alt', movie.title);
+    movieImg.setAttribute(
+      'src',
+      'https://image.tmdb.org/t/p/w300' + movie.poster_path,
+    );
+
+    movieContainer.appendChild(movieImg);
+    genericSection.appendChild(movieContainer);
   });
 }
