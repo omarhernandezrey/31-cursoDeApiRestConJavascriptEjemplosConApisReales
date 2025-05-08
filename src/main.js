@@ -1,108 +1,112 @@
-// Se crea una instancia personalizada de Axios con configuración base para usar en todas las peticiones
+// ============ INSTANCIA AXIOS CONFIGURADA ============
+
+// Se crea una instancia personalizada de Axios para acceder a la API de The Movie Database
 const api = axios.create({
-  baseURL: 'https://api.themoviedb.org/3/', // URL base de la API
+  baseURL: 'https://api.themoviedb.org/3/', // URL base para todos los endpoints
   headers: {
-    'Content-Type': 'application/json;charset=utf-8', // Formato esperado
+    'Content-Type': 'application/json;charset=utf-8', // Tipo de contenido esperado
   },
   params: {
-    'api_key': API_KEY, // Clave API agregada como parámetro por defecto
+    'api_key': API_KEY, // Parámetro de autenticación requerido por TMDB
   },
 });
 
 
-// ===================== UTILS =====================
+// ============ FUNCIONES UTILITARIAS ============
 
-// Limpia el scroll vertical para evitar que el usuario quede en mitad de una vista anterior (DRY aplicado en navegación)
-function scrollToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
-
-// Crea e inserta dinámicamente películas en el contenedor indicado
+// Función que recibe un arreglo de películas y un contenedor HTML, limpia el contenedor y agrega las películas
 function createMovies(movies, container) {
-  container.innerHTML = ''; // Elimina contenido previo para evitar duplicados
+  container.innerHTML = ''; // Limpia el contenido previo del contenedor
 
   movies.forEach(movie => {
-    const movieContainer = document.createElement('div'); // Contenedor de cada película
-    movieContainer.classList.add('movie-container');
+    const movieContainer = document.createElement('div'); // Crea contenedor de película
+    movieContainer.classList.add('movie-container'); // Asigna clase CSS
 
-    const movieImg = document.createElement('img'); // Imagen de la película
-    movieImg.classList.add('movie-img');
-    movieImg.setAttribute('alt', movie.title); // Accesibilidad: nombre de la película
+    const movieImg = document.createElement('img'); // Crea imagen de la película
+    movieImg.classList.add('movie-img'); // Clase CSS para estilo
+    movieImg.setAttribute('alt', movie.title); // Texto alternativo con el nombre de la película
     movieImg.setAttribute(
       'src',
-      'https://image.tmdb.org/t/p/w300' + movie.poster_path, // URL del póster
+      'https://image.tmdb.org/t/p/w300' + movie.poster_path, // Imagen del póster con tamaño w300
     );
 
-    movieContainer.appendChild(movieImg); // Se agrega la imagen al contenedor
-    container.appendChild(movieContainer); // Se agrega el contenedor a la lista
+    movieContainer.appendChild(movieImg); // Agrega la imagen al contenedor
+    container.appendChild(movieContainer); // Agrega el contenedor al DOM
   });
 }
 
-// Crea e inserta dinámicamente categorías en el contenedor indicado
+// Función que recibe un arreglo de categorías y un contenedor, y las inserta en el DOM con navegación activada por click
 function createCategories(categories, container) {
   container.innerHTML = ""; // Limpia el contenedor
 
   categories.forEach(category => {
-    const categoryContainer = document.createElement('div'); // Contenedor de cada categoría
-    categoryContainer.classList.add('category-container');
+    const categoryContainer = document.createElement('div'); // Crea contenedor por categoría
+    categoryContainer.classList.add('category-container'); // Asigna clase CSS
 
-    const categoryTitle = document.createElement('h3'); // Título visible de la categoría
-    categoryTitle.classList.add('category-title');
-    categoryTitle.setAttribute('id', 'id' + category.id); // ID único para cada categoría
+    const categoryTitle = document.createElement('h3'); // Crea el título <h3>
+    categoryTitle.classList.add('category-title'); // Clase CSS
+    categoryTitle.setAttribute('id', 'id' + category.id); // ID único por categoría
 
-    // Evento que cambia el hash de la URL al hacer clic en la categoría
+    // Evento que cambia el hash para activar navegación a la vista por categoría
     categoryTitle.addEventListener('click', () => {
       location.hash = `#category=${category.id}-${category.name}`;
     });
 
-    const categoryTitleText = document.createTextNode(category.name); // Texto con el nombre de la categoría
+    const categoryTitleText = document.createTextNode(category.name); // Nodo de texto con el nombre de la categoría
 
-    categoryTitle.appendChild(categoryTitleText); // Inserta el texto en el título
-    categoryContainer.appendChild(categoryTitle); // Inserta el título en el contenedor
-    container.appendChild(categoryContainer); // Inserta el contenedor en la lista principal
+    categoryTitle.appendChild(categoryTitleText); // Inserta texto dentro del título
+    categoryContainer.appendChild(categoryTitle); // Inserta título dentro del contenedor
+    container.appendChild(categoryContainer); // Agrega el contenedor al DOM
   });
 }
 
 
-// ===================== LLAMADAS A LA API =====================
+// ============ LLAMADAS A LA API ============
 
-// Consulta películas en tendencia y las muestra en la vista previa
+// Carga películas en tendencia para la vista previa (inicio)
 async function getTrendingMoviesPreview() {
-  const { data } = await api('trending/movie/day'); // Petición al endpoint de tendencias
-  const movies = data.results; // Se extraen las películas del resultado
+  const { data } = await api('trending/movie/day'); // Endpoint de películas en tendencia
+  const movies = data.results; // Se extraen los resultados
 
-  createMovies(movies, trendingMoviesPreviewList); // Se renderizan en la vista
+  createMovies(movies, trendingMoviesPreviewList); // Renderiza las películas en su sección
 }
 
-// Consulta las categorías disponibles y las muestra en la vista previa
+// Carga las categorías de películas disponibles y las muestra
 async function getCategegoriesPreview() {
-  const { data } = await api('genre/movie/list'); // Petición al endpoint de géneros
+  const { data } = await api('genre/movie/list'); // Endpoint de categorías
   const categories = data.genres;
 
-  createCategories(categories, categoriesPreviewList); // Se renderizan las categorías
+  createCategories(categories, categoriesPreviewList); // Renderiza las categorías
 }
 
-// Consulta las películas que pertenecen a una categoría específica (usando su ID)
+// Carga películas que pertenecen a una categoría específica (por ID)
 async function getMoviesByCategory(id) {
   const { data } = await api('discover/movie', {
     params: {
-      with_genres: id, // Se envía como parámetro el ID de la categoría
+      with_genres: id, // Se pasa el ID del género como parámetro
     },
   });
   const movies = data.results;
 
-  createMovies(movies, genericSection); // Se renderizan las películas en la sección genérica
+  createMovies(movies, genericSection); // Renderiza resultados en sección genérica
 }
 
-// Consulta películas por término de búsqueda
+// Carga películas según una búsqueda por texto (query)
 async function getMoviesBySearch(query) {
   const { data } = await api('search/movie', {
     params: {
-      query, // Se envía como parámetro el texto buscado
+      query, // Se pasa el texto buscado como parámetro
     },
   });
   const movies = data.results;
 
-  createMovies(movies, genericSection); // Se renderizan los resultados de búsqueda
+  createMovies(movies, genericSection); // Renderiza resultados en sección genérica
+}
+
+// Carga todas las películas en tendencia completas (no solo vista previa)
+async function getTrendingMovies() {
+  const { data } = await api('trending/movie/day'); // Igual que preview pero orientado a vista completa
+  const movies = data.results;
+
+  createMovies(movies, genericSection); // Renderiza en sección genérica
 }

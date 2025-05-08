@@ -1,31 +1,32 @@
 // ============ EVENTOS DE NAVEGACIÓN ============
 
-// Botón de búsqueda: actualiza el hash con el valor del input para activar la vista de búsqueda
+// Al hacer clic en el botón de búsqueda, se captura el valor del input y se cambia el hash con la query
 searchFormBtn.addEventListener('click', () => {
   location.hash = '#search=' + searchFormInput.value;
 });
 
-// Botón de ver más tendencias: actualiza el hash para activar la vista de tendencias
+// Botón de tendencias: redirige a la vista de tendencias
 trendingBtn.addEventListener('click', () => {
   location.hash = '#trends';
 });
 
-// Botón de flecha hacia atrás: regresa a la vista principal
+// Botón de flecha atrás: usa el historial del navegador para volver a la página anterior
 arrowBtn.addEventListener('click', () => {
-  location.hash = '#home';
+  history.back(); // ← importante: retrocede una página del historial
+  // location.hash = '#home'; // (ya no se usa porque se usa history.back())
 });
 
-// Al cargar la página o al cambiar el hash, se ejecuta la navegación
+// Se ejecuta navigator al cargar el DOM o cambiar el hash
 window.addEventListener('DOMContentLoaded', navigator, false);
 window.addEventListener('hashchange', navigator, false);
 
 
-// ============ FUNCIÓN DE NAVEGACIÓN PRINCIPAL ============
+// ============ FUNCIÓN DE RUTEO PRINCIPAL ============
 
 function navigator() {
-  console.log({ location }); // Muestra la URL actual para depuración
+  console.log({ location });
 
-  // Se determina qué vista cargar según el hash de la URL
+  // Se redirige según el hash actual
   if (location.hash.startsWith('#trends')) {
     trendsPage();
   } else if (location.hash.startsWith('#search=')) {
@@ -38,7 +39,7 @@ function navigator() {
     homePage();
   }
 
-  // Se asegura de que la vista siempre comience desde arriba
+  // Siempre hace scroll al inicio al cambiar de vista
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
@@ -50,40 +51,38 @@ function navigator() {
 function homePage() {
   console.log('Home!!');
 
-  // Reset visual del header
+  // Header corto y sin fondo
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
 
-  // Se oculta flecha de retroceso y se muestran encabezado e input
+  // Oculta flecha atrás y activa título e input
   arrowBtn.classList.add('inactive');
   arrowBtn.classList.remove('header-arrow--white');
   headerTitle.classList.remove('inactive');
   headerCategoryTitle.classList.add('inactive');
   searchForm.classList.remove('inactive');
 
-  // Se muestran las secciones de inicio
+  // Muestra secciones principales
   trendingPreviewSection.classList.remove('inactive');
   categoriesPreviewSection.classList.remove('inactive');
 
-  // Se ocultan las secciones no usadas
+  // Oculta otras secciones
   genericSection.classList.add('inactive');
   movieDetailSection.classList.add('inactive');
   
-  // Se cargan datos
+  // Carga contenido
   getTrendingMoviesPreview();
   getCategegoriesPreview();
 }
 
-// VISTA POR CATEGORÍA
+// VISTA DE CATEGORÍAS
 function categoriesPage() {
   console.log('categories!!');
 
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
-
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
-
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.remove('inactive');
   searchForm.classList.add('inactive');
@@ -93,14 +92,14 @@ function categoriesPage() {
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Extrae ID y nombre desde el hash, ejemplo: #category=12-Action
+  // Extrae ID y nombre desde el hash
   const [_, categoryData] = location.hash.split('=');
   const [categoryId, categoryName] = categoryData.split('-');
 
-  // Se muestra el nombre de la categoría en el encabezado
+  // Muestra el nombre de la categoría como título
   headerCategoryTitle.innerHTML = categoryName;
-
-  // Se cargan las películas de esa categoría
+  
+  // Carga las películas de la categoría
   getMoviesByCategory(categoryId);
 }
 
@@ -109,11 +108,8 @@ function movieDetailsPage() {
   console.log('Movie!!');
 
   headerSection.classList.add('header-container--long');
-  //headerSection.style.background = ''; // (opcional: agregar fondo de imagen de la película)
-
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.add('header-arrow--white');
-
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.add('inactive');
   searchForm.classList.add('inactive');
@@ -122,6 +118,8 @@ function movieDetailsPage() {
   categoriesPreviewSection.classList.add('inactive');
   genericSection.classList.add('inactive');
   movieDetailSection.classList.remove('inactive');
+
+  // (Puedes agregar lógica para cargar los detalles aquí)
 }
 
 // VISTA DE BÚSQUEDA
@@ -130,10 +128,8 @@ function searchPage() {
 
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
-
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
-
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.add('inactive');
   searchForm.classList.remove('inactive');
@@ -143,23 +139,21 @@ function searchPage() {
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Extrae el texto de búsqueda del hash: #search=batman
+  // Extrae la query desde el hash
   const [_, query] = location.hash.split('=');
 
-  // Se hace la búsqueda y se muestra el resultado
+  // Realiza la búsqueda
   getMoviesBySearch(query);
 }
 
-// VISTA DE TENDENCIAS
+// VISTA DE TENDENCIAS COMPLETA
 function trendsPage() {
   console.log('TRENDS!!');
 
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
-
   arrowBtn.classList.remove('inactive');
   arrowBtn.classList.remove('header-arrow--white');
-
   headerTitle.classList.add('inactive');
   headerCategoryTitle.classList.remove('inactive');
   searchForm.classList.add('inactive');
@@ -169,5 +163,9 @@ function trendsPage() {
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Aquí podrías llamar a getTrendingMovies() si tuvieras una versión completa, no solo el preview
+  // Actualiza el título de la vista
+  headerCategoryTitle.innerHTML = 'Tendencias';
+
+  // Carga todas las películas en tendencia (no solo preview)
+  getTrendingMovies();
 }
