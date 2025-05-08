@@ -1,32 +1,31 @@
 // ============ EVENTOS DE NAVEGACIÓN ============
 
-// Al hacer clic en el botón de búsqueda, se captura el valor del input y se cambia el hash con la query
+// Al hacer clic en el botón de búsqueda, se actualiza el hash con la query
 searchFormBtn.addEventListener('click', () => {
   location.hash = '#search=' + searchFormInput.value;
 });
 
-// Botón de tendencias: redirige a la vista de tendencias
+// Al hacer clic en "Ver más" de tendencias, se redirige a la vista de tendencias completas
 trendingBtn.addEventListener('click', () => {
   location.hash = '#trends';
 });
 
-// Botón de flecha atrás: usa el historial del navegador para volver a la página anterior
+// Flecha atrás: usa el historial del navegador para retroceder
 arrowBtn.addEventListener('click', () => {
-  history.back(); // ← importante: retrocede una página del historial
-  // location.hash = '#home'; // (ya no se usa porque se usa history.back())
+  history.back(); // ← vuelve a la página anterior, útil para historial real
+  // location.hash = '#home'; // alternativa directa (desactivada)
 });
 
-// Se ejecuta navigator al cargar el DOM o cambiar el hash
+// Al cargar el DOM o cambiar el hash, se ejecuta la navegación
 window.addEventListener('DOMContentLoaded', navigator, false);
 window.addEventListener('hashchange', navigator, false);
 
 
-// ============ FUNCIÓN DE RUTEO PRINCIPAL ============
+// ============ FUNCIÓN DE NAVEGACIÓN PRINCIPAL ============
 
 function navigator() {
   console.log({ location });
 
-  // Se redirige según el hash actual
   if (location.hash.startsWith('#trends')) {
     trendsPage();
   } else if (location.hash.startsWith('#search=')) {
@@ -39,43 +38,36 @@ function navigator() {
     homePage();
   }
 
-  // Siempre hace scroll al inicio al cambiar de vista
+  // Siempre reinicia scroll al cambiar de vista
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
 
 
-// ============ VISTAS ============
+// ============ VISTAS DINÁMICAS ============
 
-// VISTA PRINCIPAL
+// HOME
 function homePage() {
   console.log('Home!!');
 
-  // Header corto y sin fondo
   headerSection.classList.remove('header-container--long');
   headerSection.style.background = '';
-
-  // Oculta flecha atrás y activa título e input
   arrowBtn.classList.add('inactive');
   arrowBtn.classList.remove('header-arrow--white');
   headerTitle.classList.remove('inactive');
   headerCategoryTitle.classList.add('inactive');
   searchForm.classList.remove('inactive');
 
-  // Muestra secciones principales
   trendingPreviewSection.classList.remove('inactive');
   categoriesPreviewSection.classList.remove('inactive');
-
-  // Oculta otras secciones
   genericSection.classList.add('inactive');
   movieDetailSection.classList.add('inactive');
-  
-  // Carga contenido
+
   getTrendingMoviesPreview();
   getCategegoriesPreview();
 }
 
-// VISTA DE CATEGORÍAS
+// CATEGORÍAS
 function categoriesPage() {
   console.log('categories!!');
 
@@ -96,14 +88,12 @@ function categoriesPage() {
   const [_, categoryData] = location.hash.split('=');
   const [categoryId, categoryName] = categoryData.split('-');
 
-  // Muestra el nombre de la categoría como título
   headerCategoryTitle.innerHTML = categoryName;
-  
-  // Carga las películas de la categoría
+
   getMoviesByCategory(categoryId);
 }
 
-// VISTA DE DETALLE DE PELÍCULA
+// DETALLE DE PELÍCULA
 function movieDetailsPage() {
   console.log('Movie!!');
 
@@ -119,10 +109,12 @@ function movieDetailsPage() {
   genericSection.classList.add('inactive');
   movieDetailSection.classList.remove('inactive');
 
-  // (Puedes agregar lógica para cargar los detalles aquí)
+  // Extrae el ID de la película del hash
+  const [_, movieId] = location.hash.split('=');
+  getMovieById(movieId);
 }
 
-// VISTA DE BÚSQUEDA
+// BÚSQUEDA
 function searchPage() {
   console.log('Search!!');
 
@@ -139,14 +131,12 @@ function searchPage() {
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Extrae la query desde el hash
+  // Extrae el término de búsqueda del hash
   const [_, query] = location.hash.split('=');
-
-  // Realiza la búsqueda
   getMoviesBySearch(query);
 }
 
-// VISTA DE TENDENCIAS COMPLETA
+// TENDENCIAS COMPLETAS
 function trendsPage() {
   console.log('TRENDS!!');
 
@@ -163,9 +153,7 @@ function trendsPage() {
   genericSection.classList.remove('inactive');
   movieDetailSection.classList.add('inactive');
 
-  // Actualiza el título de la vista
   headerCategoryTitle.innerHTML = 'Tendencias';
 
-  // Carga todas las películas en tendencia (no solo preview)
   getTrendingMovies();
 }
