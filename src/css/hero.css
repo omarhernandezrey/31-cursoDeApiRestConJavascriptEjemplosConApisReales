@@ -1,20 +1,20 @@
 /* =========================================================
-  src/css/hero.css   –  versión PRO+ (mejorada)
+  src/css/hero.css   –  versión PRO+ (mejorada y optimizada para portátiles)
   • Parallax realista y suave
   • Glassmorphism avanzado en buscador
   • Tipografía y CTA premium
-  • Accesibilidad y responsividad óptimas
+  • Máxima responsividad: mobile ➜ 4K
   ========================================================= */
 
 /* 1. WRAPPER – banner con parallax (activado ≥1024 px) */
 .hero {
   position: relative;
-  height: clamp(65vh, 78vh, 92vh);
+  height: clamp(65vh, 78vh, 90vh);
   min-height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-inline: clamp(1.5rem, 5vw, 7rem);
+  padding-inline: clamp(1.5rem, 5vw, 6rem);
   color: #fff;
   margin-top: var(--header-height);
   overflow: hidden;
@@ -28,59 +28,59 @@
   position: absolute;
   inset: 0;
   background:
-   linear-gradient(100deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.3) 60%),
-   url("../img/hero-background.jpg") center/cover no-repeat;
+    linear-gradient(100deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.3) 60%),
+    url("../img/hero-background.jpg") center/cover no-repeat;
   will-change: transform;
   transform: scale(1.08);
-  transition: transform 18s cubic-bezier(.16,1,.3,1);
+  transition: transform 18s cubic-bezier(.16,1,.3,1), filter 18s cubic-bezier(.16,1,.3,1);
   z-index: -1;
   filter: brightness(0.92) blur(1.5px) saturate(1.1);
 }
 
 @media (min-width: 64rem) {
   .hero:hover::before {
-   transform: scale(1.13) translateY(-2%);
-   filter: brightness(1) blur(0.5px) saturate(1.2);
+    transform: scale(1.13) translateY(-2%);
+    filter: brightness(1) blur(0.5px) saturate(1.2);
   }
 }
 
 /* 2. CONTENIDO */
 .hero__content {
   width: 100%;
-  max-width: 820px;
+  max-width: 760px;
   text-align: center;
   animation: fadeUp 1s cubic-bezier(.16,1,.3,1) both;
   display: grid;
-  gap: 2.2rem;
+  gap: 2rem;
   z-index: 1;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(55px);}
-  to   { opacity: 1; transform: none;}
+  from { opacity: 0; transform: translateY(55px); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* 3. TITULAR CON GRADIENTE */
 .hero__title {
   font-family: var(--font-title), 'Segoe UI', 'Arial', sans-serif;
-  font-size: clamp(2.5rem, 7vw, 5.2rem);
+  font-size: clamp(2.2rem, 6vw, 4.8rem);
   font-weight: 900;
   line-height: 1.03;
   background: var(--primary-gradient, linear-gradient(90deg,#7f53ac 0%,#647dee 100%));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 3px 18px rgba(0,0,0,.45);
-  letter-spacing: -1.5px;
+  text-shadow: 0 3px 14px rgba(0,0,0,.45);
+  letter-spacing: -1px;
 }
 
 /* 4. SUBTÍTULO */
 .hero__subtitle {
-  font-size: clamp(1.18rem, 3.8vw, 2.1rem);
+  font-size: clamp(1rem, 3.5vw, 2rem);
   font-weight: 400;
-  text-shadow: 0 1px 8px rgba(0,0,0,.25);
+  text-shadow: 0 1px 6px rgba(0,0,0,.25);
   color: var(--light-color, #e0e6f7);
-  max-width: 90%;
+  max-width: 95%;
   margin-inline: auto;
 }
 
@@ -88,7 +88,7 @@
 .search-form {
   display: flex;
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   margin-inline: auto;
   border-radius: 50px;
   background: rgba(255,255,255,0.10);
@@ -100,15 +100,16 @@
 }
 
 .search-form:focus-within {
-  box-shadow: 0 0 18px 2px rgba(var(--secondary-rgb, 100,180,255),.85),
-          0 0 40px 0 rgba(var(--secondary-rgb, 100,180,255),.45);
+  box-shadow:
+    0 0 16px 2px rgba(var(--secondary-rgb,100,180,255),.85),
+    0 0 28px 0 rgba(var(--secondary-rgb,100,180,255),.45);
   border-color: var(--secondary-color, #64b4ff);
 }
 
 .search-input {
   flex: 1;
-  padding: 1.1rem 1.5rem;
-  font-size: 1.13rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
   letter-spacing: .2px;
   background: transparent;
   border: none;
@@ -126,12 +127,12 @@
 }
 
 .search-btn {
-  width: 62px;
+  width: 60px;
   display: grid;
   place-items: center;
   background: var(--secondary-color, #64b4ff);
   color: #181818;
-  font-size: 1.45rem;
+  font-size: 1.3rem;
   border: none;
   cursor: pointer;
   transition: transform .22s, filter .22s, box-shadow .22s;
@@ -140,9 +141,9 @@
 
 .search-btn:focus-visible,
 .search-btn:hover {
-  transform: scale(1.10);
-  filter: brightness(1.08);
-  box-shadow: 0 0 16px 2px rgba(100,180,255,0.32);
+  transform: scale(1.08);
+  filter: brightness(1.05);
+  box-shadow: 0 0 14px 2px rgba(100,180,255,0.32);
 }
 
 .search-btn i { pointer-events: none; }
@@ -150,14 +151,14 @@
 /* 6. CTA */
 .hero__btn {
   justify-self: center;
-  font-size: clamp(1.13rem, 3vw, 1.4rem);
-  padding: 1.05rem 2.8rem;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  padding: 1rem 2.5rem;
   font-weight: 800;
   border: none;
   border-radius: 40px;
   background: var(--primary-color, #7f53ac);
   color: #fff;
-  box-shadow: 0 0 12px rgba(var(--primary-rgb,127,83,172),.55);
+  box-shadow: 0 0 10px rgba(var(--primary-rgb,127,83,172),.55);
   cursor: pointer;
   transition: transform .22s, box-shadow .22s, background .22s;
   letter-spacing: 0.5px;
@@ -165,12 +166,12 @@
 
 .hero__btn:focus-visible,
 .hero__btn:hover {
-  transform: translateY(-4px) scale(1.04);
-  box-shadow: 0 0 22px 2px rgba(var(--primary-rgb,127,83,172),.75);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 18px 2px rgba(var(--primary-rgb,127,83,172),.75);
   background: linear-gradient(90deg,#7f53ac 0%,#647dee 100%);
 }
 
-/* 7. OVERLAY opcional para refuerzo */
+/* 7. OVERLAY opcional */
 .hero__overlay {
   position: absolute;
   inset: 0;
@@ -179,19 +180,44 @@
   z-index: 0;
 }
 
-/* 8. LAYOUT ≥768 px: alinea a la izquierda */
+/* 8. LAYOUT ≥768 px: alinea y ajusta tamaño */
 @media (min-width: 48rem) {
-  .hero { justify-content: flex-start; }
-  .hero__content { text-align: left; }
-  .search-form { margin-inline: 0; }
+  .hero {
+    justify-content: flex-start;
+    padding-inline: clamp(2rem, 6vw, 6rem);
+    height: clamp(65vh, 80vh, 90vh);
+  }
+  .hero__content {
+    text-align: left;
+    max-width: 680px;
+    gap: 2.5rem;
+  }
+  .search-form { margin-inline: 0; max-width: 420px; }
 }
 
-/* 9. AJUSTES EXTRA GRANDES */
-@media (min-width: 120rem) {
-  .hero__btn { font-size: 1.5rem; padding: 1.15rem 3.2rem; }
+/* 9. AJUSTES LAPTOP (≥1024 px hasta 1400 px) */
+@media (min-width: 64rem) and (max-width: 87.5rem) {
+  .hero {
+    padding-inline: clamp(3rem, 8vw, 8rem);
+    height: clamp(70vh, 82vh, 88vh);
+  }
+  .hero__content { max-width: 720px; }
+  .hero__title { font-size: clamp(2.8rem, 5vw, 5rem); }
+  .hero__subtitle { font-size: clamp(1.2rem, 3.2vw, 2rem); }
+  .search-form { max-width: 480px; }
 }
 
-/* 10. ACCESIBILIDAD */
+/* 10. EXTRA GRANDES ≥ 1400 px */
+@media (min-width: 87.5rem) {
+  .hero {
+    padding-inline: clamp(4rem, 10vw, 10rem);
+    height: 85vh;
+  }
+  .hero__content { max-width: 800px; }
+  .hero__btn { font-size: 1.4rem; padding: 1.1rem 3rem; }
+}
+
+/* 11. ACCESIBILIDAD */
 .search-btn:focus-visible,
 .hero__btn:focus-visible {
   outline: 2px solid var(--secondary-color, #64b4ff);
