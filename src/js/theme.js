@@ -1,28 +1,33 @@
-/* =========================================================
-   theme.js – cambio claro/oscuro + persistencia localStorage
-   ========================================================= */
-const root       = document.documentElement;             // <html>
-const btnToggle  = document.querySelector('.theme-toggle');
-const ICON_MOON  = 'fas fa-moon';
-const ICON_SUN   = 'fas fa-sun';
-const LS_KEY     = 'cine-theme';                         // clave localStorage
+/* src/js/theme.js – alterna tema y persiste; por defecto DARK */
+const LS_KEY = 'cine-theme';
+const ROOT   = document.documentElement;
+const BTN    = document.querySelector('.theme-toggle');
 
-/* — carga preferencia guardada o sistema — */
-const initial = localStorage.getItem(LS_KEY) ||
-               (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-setTheme(initial);
+const ICONS = {
+  dark: 'fas fa-sun',
+  light: 'fas fa-moon'
+};
 
-/* — clic en el botón — */
-btnToggle?.addEventListener('click', () => {
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  setTheme(next);
+document.addEventListener('DOMContentLoaded', () => {
+  // Inicializa tema: guardado o dark por defecto
+  const saved = localStorage.getItem(LS_KEY);
+  setTheme(saved || 'dark');
+
+  // Toggle
+  BTN?.addEventListener('click', () => {
+    setTheme(ROOT.dataset.theme === 'dark' ? 'light' : 'dark');
+  });
 });
 
-/* — helper — */
-function setTheme (mode = 'dark') {
-  root.setAttribute('data-theme', mode);
+function setTheme(mode) {
+  ROOT.dataset.theme = mode;
   localStorage.setItem(LS_KEY, mode);
 
-  btnToggle.querySelector('i').className = mode === 'dark' ? ICON_SUN : ICON_MOON;
-  btnToggle.setAttribute('aria-label', mode === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+  const icon = BTN?.querySelector('i');
+  if (icon) icon.className = ICONS[mode];
+
+  BTN?.setAttribute(
+    'aria-label',
+    mode === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'
+  );
 }
