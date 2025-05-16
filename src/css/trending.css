@@ -1,0 +1,171 @@
+/* =========================================================
+   src/css/trending.css
+   Tarjetas compactas + botón “Ver todas”
+   Mobile-first · Coherencia visual
+   ========================================================= */
+
+/* ===== 1. GRID CONTENEDOR – base (≤479 px) ===== */
+.similar-movies__list,
+.trending-movies__list,
+#trendingMoviesList,
+#moviesGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:.75rem;
+  margin-top:1rem;
+  width:100%;
+}
+
+/* ===== 2. TARJETA BASE ===== */
+.movie-card{
+  position:relative;
+  border-radius:var(--border-radius);
+  overflow:hidden;
+  background:rgba(255,255,255,.05);
+  box-shadow:var(--box-shadow);
+  transition:transform .25s, box-shadow .25s;
+}
+.movie-card:hover,
+.movie-card:focus-within{
+  transform:translateY(-3px) scale(1.04);
+  box-shadow:0 8px 18px rgba(0,0,0,.32),
+             0 0 8px rgba(var(--primary-rgb),.6);
+}
+
+/* ===== 3. IMAGEN ===== */
+.movie-card__img{
+  width:100%;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  display:block;
+}
+
+/* ===== 4. OVERLAY ===== */
+.movie-card__overlay{
+  position:absolute;
+  inset-block-end:0;
+  inset-inline:0;
+  padding:.6rem;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.85) 0%,
+    rgba(0,0,0,.55) 40%,
+    transparent 100%);
+  backdrop-filter:blur(2px);
+  transition:backdrop-filter .3s;
+}
+.movie-card:hover .movie-card__overlay,
+.movie-card:focus-within .movie-card__overlay{
+  backdrop-filter:blur(4px);
+}
+
+/* ===== 5. TEXTO ===== */
+.movie-card__title{
+  font-size:.9rem;
+  font-weight:700;
+  color:#fff;
+  margin-block-end:.2rem;
+  text-shadow:0 2px 4px rgba(0,0,0,.6);
+}
+.movie-card__meta{
+  display:flex;
+  justify-content:space-between;
+  font-size:.75rem;
+  color:var(--gray-color);
+  text-shadow:0 1px 3px rgba(0,0,0,.6);
+}
+.movie-card__rating{color:var(--gold-yellow);}
+
+/* ===== 6. BREAKPOINTS ===== */
+
+/* ≥480 px */
+@media (min-width:30rem){
+  .similar-movies__list,
+  .trending-movies__list,
+  #trendingMoviesList,
+  #moviesGrid{
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  }
+}
+
+/* ≥768 px */
+@media (min-width:48rem){
+  .similar-movies__list,
+  .trending-movies__list,
+  #trendingMoviesList,
+  #moviesGrid{
+    grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+    gap:1rem;
+  }
+  .movie-card__title{font-size:1rem;}
+  .movie-card__meta {font-size:.8rem;}
+}
+
+/* ≥1024 px */
+@media (min-width:64rem){
+  .similar-movies__list,
+  .trending-movies__list,
+  #trendingMoviesList,
+  #moviesGrid{
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:1.25rem;
+  }
+}
+
+/* ≥1440 px */
+@media (min-width:90rem){
+  .similar-movies__list,
+  .trending-movies__list,
+  #trendingMoviesList,
+  #moviesGrid{
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:1.5rem;
+  }
+  .movie-card__title{font-size:1.05rem;}
+  .movie-card__meta {font-size:.85rem;}
+}
+
+/* ≥1920 px */
+@media (min-width:120rem){
+  .similar-movies__list,
+  .trending-movies__list,
+  #trendingMoviesList,
+  #moviesGrid{
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:1.75rem;
+  }
+  .movie-card__title{font-size:1.15rem;}
+  .movie-card__meta {font-size:.9rem;}
+}
+
+/* ===== 7. BOTÓN “VER TODAS” ===== */
+.view-all-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  font-size:1rem;
+  font-weight:600;
+  color:var(--primary-color);
+  background:transparent;
+  padding:.4rem 1rem;
+  border-radius:30px;
+  border:2px solid transparent;
+  transition:color .25s, background .25s, box-shadow .25s;
+}
+.view-all-btn:hover,
+.view-all-btn:focus-visible{
+  background:rgba(var(--primary-rgb),.15);
+  box-shadow:0 0 8px rgba(var(--primary-rgb),.6);
+  outline:none;
+}
+[data-theme="light"] .view-all-btn{
+  color:var(--primary-dark);
+}
+[data-theme="light"] .view-all-btn:hover{
+  background:rgba(var(--primary-rgb),.2);
+}
+/* ===== FIX: que el header no tape la vista “Ver todas” ===== */
+#genericList{                          /* sección que se muestra al pulsar “Ver todas” */
+  padding-top: calc(var(--header-height) + 1rem);     /* empuja el grid bajo el header */
+  scroll-margin-top: calc(var(--header-height) + 1rem);/* para anclar enlaces internos */
+}

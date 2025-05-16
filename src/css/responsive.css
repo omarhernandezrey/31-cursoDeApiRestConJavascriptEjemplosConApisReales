@@ -1,0 +1,70 @@
+/* ==============================
+   src/css/responsive.css
+   Ajustes globales mobile-first
+   ============================== */
+
+/* ----- BASE (≤ 479 px) ----- */
+.container          { padding-inline: 1rem; }
+.header__actions    { gap: .5rem; }
+.header__title,
+.header__title--category { font-size: 1.4rem; }
+.header__title--category { display: none; }
+
+/* 🔹  Buscador SIEMPRE visible en móviles  */
+.search-form        { display: flex; }
+.search-input       { width: 130px; }
+.search-input:focus { width: 160px; }
+
+/* Botones en columna */
+.movie-actions { flex-direction: column; }
+.btn           { width: 100%; }
+
+/* ----- ≥ 480 px (30 rem) ----- */
+@media (min-width: 30rem) {
+  .search-input       { width: 160px; }
+  .search-input:focus { width: 190px; }
+
+  .movie-actions { flex-direction: row; }
+  .btn           { width: auto; }
+}
+
+/* ----- ≥ 768 px (48 rem) ----- */
+@media (min-width: 48rem) {
+  .container          { padding-inline: 2rem; }
+  .header__title,
+  .header__title--category { font-size: 1.7rem; }
+  .header__title--category { display: block; }
+
+  .search-input       { width: 200px; }
+  .search-input:focus { width: 240px; }
+}
+
+/* ----- ≥ 1024 px (64 rem) ----- */
+@media (min-width: 64rem) {
+  .container          { padding-inline: 2.5rem; }
+  .header__title,
+  .header__title--category { font-size: 1.9rem; }
+
+  .search-input       { width: 240px; }
+  .search-input:focus { width: 280px; }
+}
+
+/* ----- ≥ 1440 px (90 rem) ----- */
+@media (min-width: 90rem) {
+  .container          { padding-inline: 3rem; }
+  .header__title,
+  .header__title--category { font-size: 2.2rem; }
+
+  .search-input       { width: 280px; }
+  .search-input:focus { width: 320px; }
+}
+
+/* ----- ≥ 1920 px (120 rem) ----- */
+@media (min-width: 120rem) {
+  .container          { padding-inline: 4rem; }
+  .header__title,
+  .header__title--category { font-size: 2.5rem; }
+
+  .search-input       { width: 320px; }
+  .search-input:focus { width: 380px; }
+}

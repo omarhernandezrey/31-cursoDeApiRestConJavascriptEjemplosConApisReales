@@ -1,0 +1,74 @@
+/* src/css/loader.css
+   Loader + Error states – mobile-first, totalmente responsivo */
+
+/* Contenedor flexible que centra loader o mensajes */
+.loader-container {           /* centro absoluto y separa respecto a otros bloques */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Loader circular con borde animado */
+.loader {                     /* tamaño base en móviles */
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--primary-color);
+  border-block-end-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation var(--loader-speed, 1s) linear infinite;
+}
+
+/* Animación de rotación */
+@keyframes rotation {         /* gira en sentido horario */
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Respeto a usuarios con motion reducido */
+@media (prefers-reduced-motion: reduce) {
+  .loader { animation: none; }
+}
+
+/* Mensaje de error: bloque centrado con ícono y texto */
+.error-message {              /* caja con color de fondo y radio */
+  text-align: center;
+  padding: 2rem;
+  color: var(--error-color);
+  background: var(--error-bg);
+  border-radius: var(--border-radius);
+  margin-block: 1rem;
+  display: grid;
+  place-items: center;
+  gap: 1.5rem;
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+.error-message i {            /* ícono grande */
+  font-size: 3rem;
+}
+
+.error-message p {            /* texto descriptivo */
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ===== Breakpoints – escalado progresivo ===== */
+
+/* ≥768 px: loader y texto más grandes */
+@media (min-width: 48rem) {
+  .loader { width: 60px; height: 60px; border-width: 6px; }
+  .error-message i { font-size: 3.5rem; }
+  .error-message p { font-size: 1.1rem; }
+}
+
+/* ≥1440 px: TVs FHD – loader XXL */
+@media (min-width: 90rem) {
+  .loader { width: 72px; height: 72px; border-width: 7px; }
+  .error-message i { font-size: 4rem; }
+  .error-message p { font-size: 1.25rem; }
+}

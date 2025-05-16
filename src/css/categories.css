@@ -1,0 +1,97 @@
+/* src/css/categories.css */
+
+/* 1. Grid de categorías (mobile-first) */
+.categories-grid {
+  /* grid flexible: mínimo 2 columnas en móviles */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* 2. Tarjeta base */
+.category-card {
+  position: relative;
+  height: 70px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--box-shadow);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+/* 3. Hover/focus */
+.category-card:hover,
+.category-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+}
+
+/* 4. Nombre */
+.category-name {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  padding: .5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
+  font-size: clamp(.8rem, 2.5vw, 1rem);
+}
+
+/* 5. Overlay */
+.category-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary-color) 0%, rgba(0, 0, 0, .7) 100%);
+  opacity: .8;
+  pointer-events: none;
+}
+
+/* === Breakpoints (min-width) === */
+
+/* ≥480 px: tarjetas ligeramente más grandes */
+@media (min-width: 30rem) {
+  .category-card { height: 80px; }
+}
+
+/* ≥768 px: columnas más anchas y mayor separación */
+@media (min-width: 48rem) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.25rem;
+  }
+  .category-card { height: 90px; }
+}
+
+/* ≥1024 px: 6 columnas cómodas */
+@media (min-width: 64rem) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+  .category-card { height: 100px; }
+  .category-name { font-size: clamp(.9rem, 1.5vw, 1.1rem); }
+}
+
+/* ≥1440 px: televisores FHD */
+@media (min-width: 90rem) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.75rem;
+  }
+  .category-card { height: 110px; border-radius: calc(var(--border-radius) + 2px); }
+  .category-name { font-size: 1.2rem; }
+}
+
+/* ≥1920 px: televisores 4K */
+@media (min-width: 120rem) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+  .category-card { height: 120px; border-radius: calc(var(--border-radius) + 4px); }
+  .category-name { font-size: 1.35rem; }
+}

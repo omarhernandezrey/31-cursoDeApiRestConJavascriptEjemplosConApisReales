@@ -1,0 +1,145 @@
+/* =================================================================
+   src/css/movie-detail.css
+   Detalle de película + reparto + sección “Similares”
+   ================================================================= */
+@import "./variables.css";
+
+/* ─── HERO ─────────────────────────────────────────────────────── */
+.movie-detail__hero{
+  position:relative;
+  height:clamp(60vh,70vh,85vh);
+  min-height:420px;
+  background-size:cover;
+  background-position:center;
+  margin-top:var(--header-height);
+  display:flex;
+  align-items:flex-end;
+  overflow:hidden;
+}
+.movie-detail__hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,var(--bg-color) 0%,transparent 60%);
+  z-index:1;
+}
+
+/* ─── CONTENEDOR GLASS ─────────────────────────────────────────── */
+.movie-detail__content{
+  display:flex;
+  flex-direction:column;
+  gap:2rem;
+  width:100%;
+  padding:2rem;
+  margin:-90px auto 2rem;
+  max-width:var(--max-width);
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-effect);
+  border:var(--glass-border);
+  border-radius:var(--border-radius);
+  box-shadow:var(--shadow);
+  position:relative;
+  z-index:2;
+}
+
+/* ─── PÓSTER ───────────────────────────────────────────────────── */
+.movie-detail__poster{flex:0 0 250px;margin:auto;perspective:1000px;}
+.movie-detail__poster img{
+  width:100%;
+  border-radius:var(--border-radius);
+  box-shadow:var(--shadow);
+  transition:transform .5s;
+}
+.movie-detail__poster:hover img{transform:rotateY(10deg) rotateX(3deg) scale(1.03);}
+
+/* ─── INFO ─────────────────────────────────────────────────────── */
+.movie-title{
+  font-family:var(--font-title);
+  font-size:clamp(2rem,5vw,3.4rem);
+  font-weight:800;
+  color:var(--text-color);
+  margin-bottom:.5rem;
+}
+.movie-meta{
+  display:flex;flex-wrap:wrap;gap:1.2rem;
+  color:var(--accent-color);
+  margin-bottom:1rem;
+}
+.movie-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.25rem 0;}
+.tag{
+  padding:.35rem .75rem;
+  font-size:.8rem;
+  border-radius:20px;
+  background:rgba(255,62,78,.25);
+  border:1px solid var(--primary-color);
+  color:var(--primary-color);
+}
+
+.movie-synopsis{margin:1.75rem 0;}
+.movie-synopsis h3{font-size:1.35rem;color:var(--primary-color);margin-bottom:1rem;}
+
+.movie-actions{display:flex;flex-wrap:wrap;gap:1rem;margin:2rem 0;}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.4rem;border-radius:50px;font-weight:600;border:none;
+  cursor:pointer;transition:transform .25s, box-shadow .25s;
+}
+.btn--primary{background:var(--primary-color);color:#fff;}
+.btn--primary:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(var(--primary-rgb),.5);}
+#watchTrailerBtn{background:var(--secondary-color);color:#000;font-weight:700;}
+
+/* ─── CAST GRID ───────────────────────────────────────────────── */
+.cast-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:1.25rem;
+  margin:1.5rem 0;
+}
+@media(min-width:48rem){
+  .cast-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1.5rem;}
+}
+@media(min-width:64rem){
+  .cast-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+}
+.cast-card__img{
+  width:100%;border-radius:var(--border-radius);
+  box-shadow:0 4px 8px rgba(0,0,0,.25);
+}
+.cast-card:hover .cast-card__img{box-shadow:0 6px 14px rgba(var(--primary-rgb),.35);}
+
+/* ─── SECCIÓN “SIMILARES” ─────────────────────────────────────── */
+.similar-movies{margin-top:2rem;}
+.similar-movies__title{font-size:1.4rem;margin-bottom:1rem;color:var(--text-color);}
+
+/* grid heredado de trending.css pero se define por si acaso */
+.similar-movies__list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:.75rem;
+}
+@media(min-width:30rem){
+  .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+}
+@media(min-width:48rem){
+  .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;}
+}
+@media(min-width:64rem){
+  .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.25rem;}
+}
+@media(min-width:90rem){
+  .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.5rem;}
+}
+@media(min-width:120rem){
+  .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.75rem;}
+}
+
+/* ─── RESPONSIVE LAYOUT ≥768 px ──────────────────────────────── */
+@media(min-width:48rem){
+  .movie-detail__content{flex-direction:row;}
+  .movie-detail__poster{margin:0;}
+}
+
+/* ─── POSTER UN POCO MAYOR ≥1024 px ─────────────────────────── */
+@media(min-width:64rem){
+  .movie-detail__poster{flex:0 0 280px;}
+}

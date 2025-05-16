@@ -1,0 +1,128 @@
+/* ======================================================
+   src/css/variables.css   –  LIMPIO Y CORREGIDO
+   Solo variables y ajustes globales.  Sin reglas extra.
+   ====================================================== */
+
+/* ====================
+   SISTEMA DE DISEÑO HOLOGRÁFICO ULTRA v3.0
+   ==================== */
+:root {
+  /* 🌈 PALETA DE COLORES */
+  --primary-color:  #ff3e4e;  /* rojo neón */
+  --primary-dark:   #d62d3c;
+  --secondary-color:#00f0ff;  /* cian  */
+  --tertiary-color: #9d00ff;  /* púrpura */
+  --accent-color:   #ffd700;  /* dorado */
+
+  /* 🎨 BASE */
+  --dark-color:  #0a0a12;
+  --dark-light:  #1a1a24;
+  --light-color: #f0f0ff;
+  --gray-color:  #6c757d;
+  --gray-light:  #e9ecef;
+
+  /* 🌟 DEGRADADOS */
+  --primary-gradient: linear-gradient(135deg,var(--primary-color) 0%,var(--tertiary-color) 100%);
+  --secondary-gradient: linear-gradient(90deg,var(--secondary-color) 0%,transparent 100%);
+  --glass-gradient: linear-gradient(to right bottom,rgba(30,30,40,.95) 0%,rgba(30,30,40,.7) 100%);
+
+  /* ✨ EFECTOS DE LUZ */
+  --neon-effect:   0 0 12px rgba(255,62,78,.8),0 0 24px rgba(255,62,78,.5);
+  --cyber-glow:    0 0 16px var(--secondary-color),0 0 32px rgba(0,240,255,.4);
+  --golden-glow:   0 0 16px var(--accent-color),0 0 32px rgba(255,215,0,.4);
+
+  /* 🏗️ JERARQUÍA VISUAL */
+  --z-index-base:    10;
+  --z-index-medium:  100;
+  --z-index-high:    1000;
+  --z-index-ultra:   10000;
+  --z-ultra:         10000;         /* alias usado en CSS */
+
+  /* ✒️ TIPOGRAFÍA */
+  --font-main:  'Red Hat Display', -apple-system, sans-serif;
+  --font-title: 'Dosis', 'Orbitron', sans-serif;
+  --font-code:  'Fira Code', monospace;
+  --font-size-base:16px;
+  --text-scale: 1.2;
+  --line-height:1.6;
+
+  /* 📏 ESPACIADO */
+  --space-unit: 1rem;
+  --space-xs: calc(var(--space-unit)/2);
+  --space-sm: var(--space-unit);
+  --space-md: calc(var(--space-unit)*1.5);
+  --space-lg: calc(var(--space-unit)*2);
+  --space-xl: calc(var(--space-unit)*3);
+
+  /* 🖼️ ESTRUCTURA */
+  --header-height: 80px;
+  --max-width: 1400px;
+  --section-spacing: 8rem;
+  --border-radius: 12px;
+  --border-radius-lg: 24px;
+  --border-radius-xl:36px;
+
+  /* 🎭 SOMBRAS / GLASS */
+  --box-shadow:    0 12px 32px rgba(0,0,0,.3);
+  --box-shadow-sm: 0 6px 16px rgba(0,0,0,.2);
+  --shadow:        var(--box-shadow);      /* alias usado en componentes */
+  --shadow-sm:     var(--box-shadow-sm);
+
+  --glass-effect:  blur(24px) saturate(180%) contrast(110%);
+  --glass-bg:      rgba(20,20,30,.9);
+  --glass-border:  1px solid rgba(255,255,255,.15);
+
+  /* ⏳ TRANSICIONES */
+  --transition-base:   all .3s ease-out;
+  --transition-magic:  all .5s cubic-bezier(.16,1,.3,1);
+  --transition-bounce: all .7s cubic-bezier(.68,-0.6,.32,1.6);
+
+  /* 🎨 RGB PARA rgba() */
+  --primary-rgb:   255,62,78;
+  --secondary-rgb: 0,240,255;
+  --tertiary-rgb:  157,0,255;
+  --dark-rgb:      10,10,18;
+}
+
+/* 🌞 MODO CLARO */
+[data-theme="light"] {
+  --bg-color:    #f8f9ff;
+  --text-color:  #12121a;
+  --card-bg:     #ffffff;
+  --header-bg:   rgba(255,255,255,.98);
+  --glass-bg:    rgba(255,255,255,.88);
+  --glass-border:1px solid rgba(0,0,0,.1);
+
+  --box-shadow:  0 8px 24px rgba(0,0,0,.12);
+  --shadow:      var(--box-shadow);
+  --neon-effect: 0 0 10px rgba(255,62,78,.5);
+}
+
+/* 🌚 MODO OSCURO */
+[data-theme="dark"] {
+  --bg-color:    #0a0a12;
+  --text-color:  #f5f5ff;
+  --card-bg:     #12121a;
+  --header-bg:   rgba(18,18,24,.96);
+  --glass-bg:    rgba(18,18,24,.92);
+  --glass-border:1px solid rgba(255,255,255,.18);
+
+  --box-shadow:  0 12px 36px rgba(0,0,0,.35);
+  --shadow:      var(--box-shadow);
+  --neon-effect: 0 0 16px rgba(255,62,78,.8),
+                 0 0 32px rgba(255,62,78,.4);
+}
+
+/* 📱 AJUSTES RESPONSIVE DE VARIABLES */
+@media (max-width:1600px){
+  :root{ --max-width:1200px; --section-spacing:6rem; }
+}
+@media (max-width:1200px){
+  :root{ --max-width:100%; --section-spacing:5rem; --border-radius:10px; }
+}
+@media (max-width:768px){
+  :root{ --header-height:70px; --section-spacing:3.5rem; --font-size-base:15px; --glass-effect:blur(16px) saturate(160%); }
+}
+@media (max-width:480px){
+  :root{ --header-height:60px; --space-unit:.8rem; --section-spacing:2.5rem; --border-radius:8px; }
+}

@@ -1,0 +1,108 @@
+/* src/css/footer.css */
+
+/* 1. Área completa del footer: fondo, bordes y efecto de resplandor */
+.footer {
+  /* fondo con textura + degradado superior para profundidad */
+  background:
+    linear-gradient(to top, #0a0a12 0%, transparent 200%),
+    var(--bg-texture);
+  /* línea superior de color principal */
+  border-top: 1px solid var(--primary-color);
+  /* iluminación interna + sombra externa suave */
+  box-shadow:
+    inset 0 0 50px rgba(0, 255, 255, 0.1),
+    0 -10px 30px rgba(0, 255, 255, 0.1);
+  /* grid flexible (mobile-first): logo arriba, enlaces abajo */
+  display: grid;
+  grid-template-areas:
+    "logo"
+    "links";
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+  color: #fff;
+}
+
+/* 2. Logo principal del footer */
+.footer__logo {
+  grid-area: logo;
+  font-family: var(--font-title);
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  /* sombra de texto definida en variables */
+  text-shadow: var(--text-shadow);
+}
+
+/* 3. Lista contenedora de enlaces sociales */
+.social-links {
+  grid-area: links;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* 4. Estilo base para cada ícono/enlace social */
+.social-links a {
+  /* fondo semitransparente para resaltar sobre textura */
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--primary-color);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  transition: transform .3s ease, background .3s ease, box-shadow .3s ease;
+}
+
+/* 5. Interacción hover / focus */
+.social-links a:hover,
+.social-links a:focus-visible {
+  background: var(--primary-gradient);
+  transform: scale(1.2) rotate(10deg);
+  box-shadow: var(--neon-glow);
+  outline: none;
+}
+
+/* === Breakpoints (min-width) === */
+
+/* ≥480 px: distribución horizontal */
+@media (min-width: 30rem) {
+  .footer {
+    grid-template-areas: "logo links";
+    grid-template-columns: auto 1fr;
+    text-align: left;
+    align-items: center;
+  }
+  .social-links {
+    justify-content: flex-end;
+  }
+}
+
+/* ≥768 px: mayor separación y tamaño de íconos */
+@media (min-width: 48rem) {
+  .footer { padding: clamp(2rem, 4vw, 4rem); }
+  .social-links a { width: 48px; height: 48px; font-size: 1.35rem; }
+}
+
+/* ≥1024 px: footer dividido en columnas con más aire */
+@media (min-width: 64rem) {
+  .footer {
+    grid-template-areas: "logo links";
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+  }
+}
+
+/* ≥1440 px: televisores FHD — íconos más grandes y glow intenso */
+@media (min-width: 90rem) {
+  .social-links a { width: 56px; height: 56px; font-size: 1.6rem; }
+  .social-links a:hover,
+  .social-links a:focus-visible { box-shadow: 0 0 15px var(--primary-color); }
+}
+
+/* ≥1920 px: 4K — aumento general de escala */
+@media (min-width: 120rem) {
+  .footer__logo { font-size: 2.5rem; }
+  .social-links a { width: 64px; height: 64px; font-size: 1.8rem; }
+}

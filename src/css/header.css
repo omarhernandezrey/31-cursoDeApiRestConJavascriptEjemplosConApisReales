@@ -1,0 +1,154 @@
+/* ======================================================
+  src/css/header.css
+  Header fijo, moderno y responsivo
+  ====================================================== */
+@import './variables.css';
+
+/* ═════════ 1. HEADER FIJO ═════════ */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height, 64px);
+  background: var(--header-bg, rgba(18,18,24,0.96));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  z-index: var(--z-ultra, 100);
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+
+/* ═════════ 2. CONTENEDOR INTERNO ═════════ */
+.header .container {
+  max-width: var(--max-width, 1200px);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* ═════════ 3. BOTÓN VOLVER ═════════ */
+.header__back-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-right: 1rem;
+  border: none;
+  background: var(--color-secondary, #fff);
+  color: #000;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 0 10px rgba(var(--secondary-rgb, 255,0,0),0.15);
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.header__back-btn:focus-visible {
+  outline: 2px solid var(--color-primary, #ff1744);
+}
+.header__back-btn:hover {
+  transform: scale(1.08);
+  background: var(--color-secondary-hover, #f3f3f3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22), 0 0 16px rgba(var(--secondary-rgb,255,0,0),0.22);
+}
+
+/* — Modo claro — */
+[data-theme="light"] .header__back-btn {
+  background: var(--primary-color, #ff1744);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 0 12px rgba(var(--primary-rgb,255,23,68),0.18);
+}
+[data-theme="light"] .header__back-btn:hover {
+  background: var(--primary-color-hover, #ff4569);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 0 18px rgba(var(--primary-rgb,255,23,68),0.28);
+}
+
+/* ═════════ 4. LOGO Y TÍTULO ═════════ */
+.header__logo {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  gap: 0.5rem;
+}
+.header__title {
+  font-family: var(--font-title, 'Montserrat', sans-serif);
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--color-primary, #ff1744);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  letter-spacing: -0.5px;
+  transition: color 0.2s;
+}
+.header__title span {
+  color: var(--text-color, #fff);
+}
+
+/* ═════════ 5. ACCIONES DERECHA ═════════ */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+.theme-toggle {
+  color: var(--text-color, #fff);
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.18s, transform 0.18s;
+  padding: 0.3em;
+  border-radius: 50%;
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-primary, #ff1744);
+}
+.theme-toggle:hover {
+  color: var(--color-primary, #ff1744);
+  transform: scale(1.13);
+  background: rgba(var(--primary-rgb,255,23,68),0.08);
+}
+
+/* ═════════ 6. RESPONSIVE BREAKPOINTS ═════════ */
+@media (max-width: 768px) {
+  .header .container {
+   padding: 0 0.75rem;
+   gap: 1rem;
+  }
+  .header__title {
+   font-size: 1.3rem;
+  }
+  .header__back-btn {
+   width: 40px;
+   height: 40px;
+   font-size: 1.1rem;
+   margin-right: 0.5rem;
+  }
+  .header__actions {
+   gap: 0.7rem;
+  }
+}
+@media (max-width: 480px) {
+  .header__title {
+   font-size: 1.05rem;
+  }
+  .header__logo {
+   gap: 0.2rem;
+  }
+}
+
+/* ═════════ 7. ACCESIBILIDAD ═════════ */
+.header__back-btn:active,
+.theme-toggle:active {
+  filter: brightness(0.92);
+}

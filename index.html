@@ -1,140 +1,156 @@
+<!-- src/index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700;800&family=Red+Hat+Display:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles/app.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>PlatziMovies</title>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "axios": "https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm"
+    }
+  }
+  </script>
+<!-- en <head> -->
+<link rel="icon" type="image/png" href="src/img/favicon.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700;800&family=Red+Hat+Display:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./src/css/reset.css"/>
+  <link rel="stylesheet" href="./src/css/variables.css"/>
+  <link rel="stylesheet" href="./src/css/base.css"/>
+  <link rel="stylesheet" href="./src/css/header.css"/>
+  <link rel="stylesheet" href="./src/css/hero.css"/>
+  <link rel="stylesheet" href="./src/css/trending.css"/>
+  <link rel="stylesheet" href="./src/css/categories.css"/>
+  <link rel="stylesheet" href="./src/css/movie-detail.css"/>
+  <link rel="stylesheet" href="./src/css/footer.css"/>
+  <link rel="stylesheet" href="./src/css/utilities.css"/>
+  <link rel="stylesheet" href="./src/css/responsive.css"/>
+  <link rel="stylesheet" href="./src/css/trailer-modal.css">
+  <!-- <link rel="stylesheet" href="./src/css/effects.css"> -->
 </head>
 <body>
-  <header id="header" class="header-container">
-    <span class="header-arrow inactive">&lt;</span>
-    <h1 class="header-title">PlatziMovies</h1>
-    <h1 class="header-title header-title--categoryView inactive">Acción</h1>
-
-    <form id="searchForm" class="header-searchForm">
-      <input type="text" placeholder="Vengadores" />
-      <button id="searchBtn">🔍</button>
-    </form>
+  <header id="header" class="header">
+    <div class="container">
+      <button id="headerBackBtn" class="header__back-btn inactive" aria-label="Volver atrás">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="header__logo">
+        <h1 class="header__title">Cine<span>Xpress</span></h1>
+        <h1 class="header__title--category inactive"></h1>
+      </div>
+      <div class="header__actions">
+        <button class="theme-toggle" aria-label="Cambiar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <section id="trendingPreview" class="trendingPreview-container">
-    <div class="trendingPreview-header">
-      <h2 class="trendingPreview-title">Tendencias</h2>
-      <button class="trendingPreview-btn">Ver más</button>
-    </div>
+  <section class="hero" id="hero">
+    <div class="hero__content">
+      <h2 class="hero__title">Explora el mundo del cine</h2>
+      <p class="hero__subtitle">Descubre las películas más populares y tus próximas favoritas</p>
 
-    <article class="trendingPreview-movieList">
-      <!-- <div class="movie-container">
-        <img
-          src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-          class="movie-img"
-          alt="Nombre de la película"
-        />
-      </div> -->
-    </article>
+      <!-- Search solo en Home -->
+      <form id="searchForm" class="search-form">
+        <input type="text" placeholder="Buscar películas..." class="search-input"/>
+        <button type="submit" class="search-btn" aria-label="Buscar">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+
+      <button id="heroBtn" class="btn btn--primary hero__btn">Explorar ahora</button>
+    </div>
+    <div class="hero__overlay"></div>
   </section>
 
-  <section id="categoriesPreview" class="categoriesPreview-container">
-    <h2 class="categoriesPreview-title">Categorías</h2>
-
-    <article class="categoriesPreview-list">
-      <!-- <div class="category-container">
-        <h3 id="id28" class="category-title">Romance</h3>
-      </div> -->
-    </article>
-  </section>
-
-  <section id="genericList" class="genericList-container inactive">
-    <div class="movie-container">
-      <img
-        src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-        class="movie-img"
-        alt="Nombre de la película"
-      />
-    </div>
-
-    <div class="movie-container">
-      <img
-        src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-        class="movie-img"
-        alt="Nombre de la película"
-      />
-    </div>
-
-    <div class="movie-container">
-      <img
-        src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-        class="movie-img"
-        alt="Nombre de la película"
-      />
-    </div>
-  </section>
-
-  <section id="movieDetail" class="movieDetail-container inactive">
-    <h1 class="movieDetail-title">Deadpool</h1>
-    <span class="movieDetail-score">7.6</span>
-    <p class="movieDetail-description">
-      Wisecracking mercenary Deadpool battles the evil and powerful Cable and other bad guys to save a boy's life.
-    </p>
-
-    <article class="categories-list">
-      <div class="category-container">
-        <h3 id="id28" class="category-title">Romance</h3>
-      </div>
-
-      <div class="category-container">
-        <h3 id="id16" class="category-title">Drama</h3>
-      </div>
-
-      <div class="category-container">
-        <h3 id="id14" class="category-title">Acción</h3>
-      </div>
-    </article>
-
-    <article class="relatedMovies-container">
-      <h2 class="relatedMovies-title">Películas similares</h2>
-
-      <div class="relatedMovies-scrollContainer">
-        <div class="movie-container">
-          <img
-            src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-            class="movie-img"
-            alt="Nombre de la película"
-          />
+  <main class="main-content">
+    <section class="section trending-section" id="trendingPreview">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Tendencias</h2>
+          <button id="viewAllBtn" class="btn btn--link view-all-btn">Ver todas</button>
         </div>
-        
-        <div class="movie-container">
-          <img
-            src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-            class="movie-img"
-            alt="Nombre de la película"
-          />
-        </div>
-        
-        <div class="movie-container">
-          <img
-            src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-            class="movie-img"
-            alt="Nombre de la película"
-          />
+        <div class="trending-movies">
+          <div id="trendingMoviesList" class="trending-movies__list"></div>
         </div>
       </div>
-    </article>
-  </section>
+    </section>
 
-  <footer>Hecho con amor en Platzi por @omarHernandezRey</footer>
-  
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="./src/secrets.js"></script>
-  <script src="./src/nodes.js"></script>
-  <script src="./src/main.js"></script>
-  <script src="./src/navigation.js"></script>
+    <section class="section categories-section" id="categoriesPreview">
+      <div class="container">
+        <h2 class="section__title">Explora por categorías</h2>
+        <div id="categoriesList" class="categories-grid"></div>
+      </div>
+    </section>
+
+    <section class="section generic-list-section inactive" id="genericList">
+      <div class="container">
+        <div id="moviesGrid" class="movies-grid"></div>
+      </div>
+    </section>
+
+    <section class="movie-detail inactive" id="movieDetail">
+      <div class="movie-detail__hero"></div>
+      <div class="container">
+        <div class="movie-detail__content">
+          <div class="movie-detail__poster">
+            <img id="moviePoster" src="" alt="Poster de la película" class="movie-poster"/>
+          </div>
+          <div class="movie-detail__info">
+            <h1 id="movieDetailTitle" class="movie-title"></h1>
+            <div class="movie-meta">
+              <span id="movieRating" class="movie-rating"></span>
+              <span id="movieRuntime" class="movie-runtime"></span>
+              <span id="movieYear" class="movie-year"></span>
+            </div>
+            <div id="movieTags" class="movie-tags"></div>
+            <div id="movieExtra" class="movie-extra"></div>
+            <div class="movie-synopsis">
+              <h3>Sinopsis</h3>
+              <p id="movieDescription"></p>
+            </div>
+            <div class="movie-credits">
+              <h3>Reparto principal</h3>
+              <div id="movieCast" class="cast-grid"></div>
+            </div>
+            <div class="movie-actions">
+              <button id="watchTrailerBtn" class="btn btn--primary watch-trailer-btn">
+                <i class="fas fa-play"></i> Ver tráiler
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="trailerModal" class="trailer-modal inactive">
+          <div class="trailer-modal__content">
+          <button id="closeModalBtn" class="trailer-modal__close" aria-label="Cerrar tráiler">
+            <i class="fas fa-times"></i>
+          </button>
+            <div id="trailerContainer" class="trailer-container"></div>
+          </div>
+        </div>
+        <div class="similar-movies">
+          <h3 class="similar-movies__title">Películas similares</h3>
+          <div id="similarMoviesList" class="similar-movies__list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <!-- ... contenido del footer ... -->
+  </footer>
+
+  <script type="module" src="./src/js/config.js"></script>
+  <script type="module" src="./src/js/api.js"></script>
+  <script type="module" src="./src/js/dom.js"></script>
+  <script type="module" src="./src/js/navigation.js"></script>
+  <script type="module" src="./src/js/main.js"></script>
+  <script type="module" src="./src/js/trailerModal.js"></script>
 </body>
 </html>

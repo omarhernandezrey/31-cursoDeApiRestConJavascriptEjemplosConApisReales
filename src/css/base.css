@@ -1,0 +1,50 @@
+/* ======================================================
+   src/css/base.css   –  estilos globales de la aplicación
+   ====================================================== */
+
+/* 1. Reinicio mínimo (se complementa con reset.css) */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  line-height: 1.6;
+  background: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 2. Enlaces */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 3. Imágenes y medias */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 4. Formularios */
+input, button, textarea, select {
+  font: inherit;
+}
+button { cursor: pointer; border: none; background: none; }
+
+/* 5. Contenedores utilitarios */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+/* 6. Transiciones base */
+* {
+  transition: var(--transition-fast);
+}

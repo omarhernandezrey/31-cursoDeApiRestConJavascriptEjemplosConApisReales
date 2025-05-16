@@ -1,0 +1,81 @@
+/* =========================
+   src/css/reset.css
+   Reset + ajustes globales
+   ========================= */
+
+/* 1. Reset de margin, padding y box-sizing */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. Scroll suave y ajustes de tipografía base */
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+}
+
+/* 3. Cuerpo: altura mínima y suavizado de fuentes */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 4. Medios: bloqueo de desbordes y responsividad */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 5. Tipografía heredada para formularios e inputs */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 6. Botones: cursor y reset visual */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* 7. Enlaces: sin subrayado y heredan color */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 8. Listas: sin viñetas */
+ul,
+ol {
+  list-style: none;
+}
+
+/* 9. Respeto a usuarios con motion reducido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 10. Indicador de foco accesible */
+:focus-visible {
+  outline: 2px solid var(--primary-color, #ff4d4d);
+  outline-offset: 2px;
+}
