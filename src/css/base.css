@@ -48,3 +48,8 @@ button { cursor: pointer; border: none; background: none; }
 * {
   transition: var(--transition-fast);
 }
+
+/* transiciones suaves al cambiar de tema */
+:root{
+  transition: background-color .3s, color .3s;
+}
