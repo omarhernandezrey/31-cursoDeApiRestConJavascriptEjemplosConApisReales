@@ -1,7 +1,8 @@
-/* ======================================================================
-   src/js/navigation.js      (archivo COMPLETO: reemplaza el actual)
-   Enrutador SPA + listas + back-button + modal tráiler
-   ====================================================================== */
+/* =====================================================================
+   src/js/navigation.js   —  VERSIÓN COMPLETA Y FUNCIONAL
+   SPA + Detalle + Scroll infinito con IntersectionObserver
+   • Sin duplicados  • Sentinel recolocado tras cada lote
+   ===================================================================== */
 
 import {
   getTrendingMovies,
@@ -9,7 +10,7 @@ import {
   getMoviesByCategory,
   searchMovies,
   getMovieDetails,
-  getFullImageUrl
+  getFullImageUrl,
 } from './api.js';
 
 import {
@@ -17,70 +18,60 @@ import {
   createMovieCard,
   createCategoryCard,
   createCastCard,
-  renderList
+  renderList,
 } from './dom.js';
 
-import {
-  openTrailerModal,
-  closeTrailerModal
-} from './trailerModal.js';
+import { openTrailerModal, closeTrailerModal } from './trailerModal.js';
 
-/* -------------------------------------------------- */
-/* 1. Navegación inicial                              */
-/* -------------------------------------------------- */
+/* ─── ESTADO GLOBAL ─────────────────────────────────────────── */
+let page = 1;
+let maxPage = 1;
+const shownIds = new Set();
+let observer;                       // IntersectionObserver
+
+/* ═════════ 1. LISTENERS ═════════ */
 export function setupNavigation () {
-  window.addEventListener('DOMContentLoaded', handleRoute, { passive: true });
-  window.addEventListener('hashchange',       handleRoute, { passive: true });
-  window.addEventListener('scroll',           handleInfiniteScroll, { passive: true });
+  window.addEventListener('DOMContentLoaded', handleRoute, { passive:true });
+  window.addEventListener('hashchange',       handleRoute, { passive:true });
 
-  /* Botones fijos */
-  elements.headerBackBtn?.addEventListener('click', () => (location.hash = '#home'));
+  elements.headerBackBtn?.addEventListener('click', () => history.back());
   elements.viewAllBtn   ?.addEventListener('click', () => (location.hash = '#trends'));
   elements.heroBtn      ?.addEventListener('click', () => (location.hash = '#trends'));
   elements.closeModalBtn?.addEventListener('click', closeTrailerModal);
 
-  /* Delegación de clic para tarjetas */
-  document.body.addEventListener('click', delegateCards, { passive: true });
+  document.body.addEventListener('click', delegateCards, { passive:true });
 }
 
-/* -------------------------------------------------- */
-/* 2. Enrutador SPA                                   */
-/* -------------------------------------------------- */
+/* ═════════ 2. ROUTER ═════════ */
 async function handleRoute () {
-  resetView();
+  resetView(); detachObserver();
 
   const h = location.hash;
-  if (h.startsWith('#movie=')) {
-    await loadMovieDetail(h.slice(7));
-  } else if (h.startsWith('#category=')) {
-    const [id, name] = h.slice(10).split('-');
+  if      (h.startsWith('#movie='))    await loadMovieDetail(h.slice(7));
+  else if (h.startsWith('#category=')) {
+    const [id,name] = h.slice(10).split('-');
     await loadCategoryPage(id, decodeURIComponent(name));
-  } else if (h.startsWith('#search=')) {
-    await loadSearchPage(decodeURIComponent(h.slice(8)));
-  } else if (h === '#trends') {
-    await loadTrendingPage();
-  } else {
-    await loadHomePage(); /* '' | '#home' */
   }
+  else if (h.startsWith('#search='))   await loadSearchPage(decodeURIComponent(h.slice(8)));
+  else if (h === '#trends')            await loadTrendingPage();
+  else                                 await loadHomePage();
 }
 
-/* -------------------------------------------------- */
-/* 3. Páginas                                         */
-/* -------------------------------------------------- */
+/* ═════════ 3. PÁGINAS ═════════ */
 async function loadHomePage () {
   elements.headerTitle.classList.remove('inactive');
-  elements.headerCategoryTitle.classList.add('inactive');
-  elements.heroSection.classList.remove('inactive');
-  elements.trendingSection.classList.remove('inactive');
+  elements.heroSection     .classList.remove('inactive');
+  elements.trendingSection .classList.remove('inactive');
   elements.categoriesSection.classList.remove('inactive');
 
-  renderList(await getTrendingMovies(), createMovieCard,    elements.trendingMoviesList);
-  renderList(await getCategories(),    createCategoryCard,  elements.categoriesList);
+  const movies = toMovies(await getTrendingMovies());
+  renderList(movies, createMovieCard, elements.trendingMoviesList);
+  movies.forEach(m => shownIds.add(m.id));
+
+  renderList(await getCategories(), createCategoryCard, elements.categoriesList);
 }
 
 async function loadCategoryPage (id, name) {
-  elements.headerTitle.classList.add('inactive');
-  elements.headerCategoryTitle.classList.remove('inactive');
   elements.headerCategoryTitle.textContent = name;
   showGeneric();
 
@@ -89,8 +80,6 @@ async function loadCategoryPage (id, name) {
 }
 
 async function loadSearchPage (query) {
-  elements.headerTitle.classList.add('inactive');
-  elements.headerCategoryTitle.classList.remove('inactive');
   elements.headerCategoryTitle.textContent = `Resultados: ${query}`;
   showGeneric();
 
@@ -99,95 +88,112 @@ async function loadSearchPage (query) {
 }
 
 async function loadTrendingPage () {
-  elements.headerTitle.classList.add('inactive');
-  elements.headerCategoryTitle.classList.remove('inactive');
   elements.headerCategoryTitle.textContent = 'Tendencias';
   showGeneric();
 
-  renderList(await getTrendingMovies('week'), createMovieCard, elements.moviesGrid);
+  page = 1; shownIds.clear();
+  const res    = await getTrendingMovies('week', page);
+  const movies = orderByDate(toMovies(res));
+  maxPage      = res.total_pages ?? Infinity;
+
+  renderList(movies, createMovieCard, elements.moviesGrid);
+  movies.forEach(m => shownIds.add(m.id));
+
+  createSentinel();
 }
 
 async function loadMovieDetail (id) {
   showDetail();
-
   const m = await getMovieDetails(id);
 
-  /* Hero y datos base */
   elements.movieDetailHero.style.backgroundImage =
-    `url(${getFullImageUrl(m.backdrop_path, 'original')})`;
-  elements.moviePoster.src     = getFullImageUrl(m.poster_path, 'w500');
-  elements.moviePoster.onerror = () => { elements.moviePoster.src = './src/img/no-image.jpg'; };
+    `url(${getFullImageUrl(m.backdrop_path,'original')})`;
+  elements.moviePoster.src = getFullImageUrl(m.poster_path,'w500');
+  elements.moviePoster.onerror = () => (elements.moviePoster.src='./src/img/no-image.jpg');
+
   elements.movieDetailTitle.textContent = m.title;
-  elements.movieRating .innerHTML = `<i class="fas fa-star"></i> ${m.vote_average?.toFixed(1) || 'N/A'} (${m.vote_count} votos)`;
-  elements.movieRuntime.innerHTML = `<i class="fas fa-clock"></i> ${m.runtime || 'N/A'} min`;
-  elements.movieYear   .innerHTML = `<i class="fas fa-calendar-alt"></i> ${m.release_date?.split('-')[0] || 'N/A'}`;
+  elements.movieRating .innerHTML = `<i class="fas fa-star"></i> ${m.vote_average?.toFixed(1)||'N/A'} (${m.vote_count})`;
+  elements.movieRuntime.innerHTML = `<i class="fas fa-clock"></i> ${m.runtime||'N/A'} min`;
+  elements.movieYear   .innerHTML = `<i class="fas fa-calendar-alt"></i> ${m.release_date?.split('-')[0]||'N/A'}`;
 
-  /* Géneros, sinopsis, reparto, similares */
-  elements.movieTags.innerHTML        = m.genres.map(g => `<span class="tag">${g.name}</span>`).join('');
-  elements.movieDescription.textContent = m.overview || 'No hay descripción disponible.';
-  renderList(m.cast,     createCastCard, elements.castGrid);
-  renderList(m.similar,  createMovieCard, elements.similarMoviesList);
+  elements.movieTags.innerHTML     = m.genres.map(g=>`<span class="tag">${g.name}</span>`).join('');
+  elements.movieDescription.textContent = m.overview || 'Sin descripción disponible.';
 
-  /* Tráiler */
-  const tKey = m.videos.find(v => v.type === 'Trailer')?.key;
-  if (tKey) {
-    elements.watchTrailerBtn.style.display = 'inline-flex';
-    elements.watchTrailerBtn.onclick = () => openTrailerModal(tKey);
-  } else {
-    elements.watchTrailerBtn.style.display = 'none';
-  }
+  renderList(m.cast,    createCastCard,  elements.castGrid);
+  renderList(m.similar, createMovieCard, elements.similarMoviesList);
+
+  const tKey = m.videos.find(v=>v.type==='Trailer')?.key;
+  elements.watchTrailerBtn.style.display = tKey ? 'inline-flex' : 'none';
+  if (tKey) elements.watchTrailerBtn.onclick = () => openTrailerModal(tKey);
 }
 
-/* -------------------------------------------------- */
-/* 4. Delegación de clic                              */
-/* -------------------------------------------------- */
-function delegateCards (e) {
-  const movieCard = e.target.closest('.movie-card');
-  if (movieCard) {
-    location.hash = `#movie=${movieCard.dataset.id}`;
-    return;
-  }
-  const catCard = e.target.closest('.category-card');
-  if (catCard) {
-    const name = catCard.querySelector('.category-name').textContent;
-    location.hash = `#category=${catCard.dataset.id}-${encodeURIComponent(name)}`;
-  }
+/* ═════════ 4. INFINITE SCROLL (IntersectionObserver) ═════════ */
+function createSentinel () {
+  const sentinel = document.createElement('div');
+  sentinel.id = 'infinite-sentinel';
+  elements.moviesGrid.appendChild(sentinel);
+
+  observer = new IntersectionObserver(loadNextPage, {
+    rootMargin: '600px 0px',
+    threshold : 0,
+  });
+  observer.observe(sentinel);
 }
 
-/* -------------------------------------------------- */
-/* 5. Scroll infinito (placeholder)                   */
-/* -------------------------------------------------- */
-function handleInfiniteScroll () {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  if (scrollTop + clientHeight >= scrollHeight - 300 &&
-      !elements.movieDetailSection.classList.contains('inactive')) {
-    /* … cargar más si lo deseas */
-  }
+async function loadNextPage (entries) {
+  if (!entries[0].isIntersecting) return;
+  if (page >= maxPage) { detachObserver(); return; }
+
+  await new Promise(r => setTimeout(r, 400));  // pausa suave
+  page += 1;
+
+  const res   = await getTrendingMovies('week', page);
+  maxPage     = res.total_pages ?? maxPage;
+  const fresh = orderByDate(toMovies(res)).filter(m => !shownIds.has(m.id));
+
+  if (!fresh.length) return;                  // si la página sólo trae repetidos, espera
+
+  fresh.forEach(m => {
+    appendCard(createMovieCard(m));
+    shownIds.add(m.id);
+  });
+
+  /* ⬅️  recoloca el sentinel al final del grid para seguir observando */
+  const sentinel = document.getElementById('infinite-sentinel');
+  if (sentinel) elements.moviesGrid.appendChild(sentinel);
 }
 
-/* -------------------------------------------------- */
-/* 6. Helpers de vista                                */
-/* -------------------------------------------------- */
-function resetView () {
-  [
-    elements.heroSection,
-    elements.trendingSection,
-    elements.categoriesSection,
-    elements.genericListSection,
-    elements.movieDetailSection
-  ].forEach(el => el.classList.add('inactive'));
+/* ═════════ helpers ═════════ */
+function toMovies(res){ return Array.isArray(res) ? res : res.results ?? []; }
+function orderByDate(arr){ return [...arr].sort((a,b)=>(b.release_date||'').localeCompare(a.release_date||'')); }
+function appendCard(c){ c && (c.nodeType ? elements.moviesGrid.appendChild(c) : elements.moviesGrid.insertAdjacentHTML('beforeend', c)); }
 
+function delegateCards(e){
+  const m=e.target.closest('.movie-card'); if(m){ location.hash=`#movie=${m.dataset.id}`; return; }
+  const c=e.target.closest('.category-card'); if(c){ const n=c.querySelector('.category-name').textContent; location.hash=`#category=${c.dataset.id}-${encodeURIComponent(n)}`; }
+}
+
+/* ═════════ VISTA / OBSERVER MANAGMENT ═════════ */
+function resetView (){
+  [elements.heroSection,elements.trendingSection,elements.categoriesSection,
+   elements.genericListSection,elements.movieDetailSection]
+   .forEach(el=>el.classList.add('inactive'));
   elements.headerBackBtn.classList.add('inactive');
   elements.headerTitle.classList.remove('inactive');
   elements.headerCategoryTitle.classList.add('inactive');
 }
-
-function showGeneric () {
+function showGeneric (){
   elements.genericListSection.classList.remove('inactive');
   elements.headerBackBtn.classList.remove('inactive');
+  elements.headerTitle.classList.add('inactive');
+  elements.headerCategoryTitle.classList.remove('inactive');
 }
-
-function showDetail () {
+function showDetail (){
   elements.movieDetailSection.classList.remove('inactive');
   elements.headerBackBtn.classList.remove('inactive');
+  elements.headerTitle.classList.add('inactive');
+  elements.headerCategoryTitle.classList.add('inactive');
+}
+function detachObserver (){
+  observer?.disconnect(); observer = null;
 }
