@@ -167,3 +167,10 @@
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* --------------------
+   MARGEN EXTRA PARA FOOTER
+   -------------------- */
+.mb-footer {
+  margin-bottom: 4rem; /* Espacio entre lista y el footer */
+}

@@ -122,9 +122,15 @@ async function loadMovieDetail (id) {
   renderList(m.cast,    createCastCard,  elements.castGrid);
   renderList(m.similar, createMovieCard, elements.similarMoviesList);
 
+  // 👉 Agrega margen inferior entre películas similares y footer
+  elements.similarMoviesList.classList.add('mb-footer');
+
   const tKey = m.videos.find(v=>v.type==='Trailer')?.key;
   elements.watchTrailerBtn.style.display = tKey ? 'inline-flex' : 'none';
   if (tKey) elements.watchTrailerBtn.onclick = () => openTrailerModal(tKey);
+
+  // 👇 Scroll al inicio al cargar detalles
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ═════════ 4. INFINITE SCROLL (IntersectionObserver) ═════════ */
