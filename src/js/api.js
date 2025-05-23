@@ -1,15 +1,13 @@
 /* ======================================================================
-   src/js/api.js           —  VERSIÓN COMPLETA REVISADA
-   • Todas las peticiones aceptan opcionalmente `page = 1`
-   • Siempre devuelven { page, results, total_pages, … }
-   • Listo para scroll infinito con IntersectionObserver
+   src/js/api.js           —  VERSIÓN COMPATIBLE CON TODOS LOS NAVEGADORES
+   • Usa Axios global cargado desde CDN (no usa import)
+   • Compatible con iPhone 7 / iOS antiguos
    ====================================================================== */
 
 import { API_KEY, BASE_URL, IMG_BASE_URL, DEFAULT_LANGUAGE } from './config.js';
-import axios from 'axios';
 
-/* Axios preconfigurado */
-const api = axios.create({
+/* Axios global (desde CDN clásico) */
+const api = window.axios.create({
   baseURL : BASE_URL,
   headers : { 'Content-Type':'application/json;charset=utf-8', 'Cache-Control':'no-cache' },
   params  : { api_key: API_KEY, language: DEFAULT_LANGUAGE },
@@ -19,11 +17,6 @@ const api = axios.create({
 /* ────────────────────────────────────────────────────────────
    1.  TENDENCIAS
    ──────────────────────────────────────────────────────────── */
-/**
- * @param { 'day' | 'week' } timeWindow
- * @param { number } page            – 1, 2, 3…
- * @returns { page, results[], total_pages, total_results }
- */
 export async function getTrendingMovies (timeWindow = 'day', page = 1) {
   const { data } = await api(`trending/movie/${timeWindow}`, { params:{ page } });
   return normaliseListResponse(data);
@@ -51,7 +44,9 @@ export async function getMoviesByCategory (categoryId, page = 1) {
    4.  BÚSQUEDA
    ──────────────────────────────────────────────────────────── */
 export async function searchMovies (query, page = 1) {
-  const { data } = await api('search/movie', { params:{ query, page, include_adult:false } });
+  const { data } = await api('search/movie', {
+    params: { query, page, include_adult: false },
+  });
   return normaliseListResponse(data);
 }
 
@@ -63,14 +58,14 @@ export async function getMovieDetails (movieId) {
     api(`movie/${movieId}`),
     api(`movie/${movieId}/videos`),
     api(`movie/${movieId}/credits`),
-    api(`movie/${movieId}/similar`, { params:{ page:1 } }),
+    api(`movie/${movieId}/similar`, { params: { page: 1 } }),
   ]);
 
   return {
     ...movie.data,
-    videos : videos .data.results ?? [],
-    cast   : credits.data.cast   ?.slice(0,10) ?? [],
-    similar: similar.data.results?.slice(0,6) ?? [],
+    videos : videos.data.results ?? [],
+    cast   : credits.data.cast?.slice(0, 10) ?? [],
+    similar: similar.data.results?.slice(0, 6) ?? [],
   };
 }
 
@@ -82,13 +77,13 @@ export function getFullImageUrl (path, size = 'w300') {
 }
 
 /* ────────────────────────────────────────────────────────────
-   7.  HELPER: HOMOGENEIZAR RESPUESTAS DE LISTA
+   7.  HOMOGENEIZAR RESPUESTA
    ──────────────────────────────────────────────────────────── */
 function normaliseListResponse (data = {}) {
   return {
-    page         : data.page         ?? 1,
-    results      : data.results      ?? [],
-    total_pages  : data.total_pages  ?? 1,
-    total_results: data.total_results?? data.results?.length ?? 0,
+    page         : data.page ?? 1,
+    results      : data.results ?? [],
+    total_pages  : data.total_pages ?? 1,
+    total_results: data.total_results ?? data.results?.length ?? 0,
   };
 }
