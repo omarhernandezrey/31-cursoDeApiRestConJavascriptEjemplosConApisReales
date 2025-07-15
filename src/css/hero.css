@@ -37,14 +37,139 @@
   filter: brightness(0.92) blur(1.5px) saturate(1.1);
 }
 
+/* ─── BACKGROUNDS DINÁMICOS ─────────────────────────────────── */
+.hero__dynamic-background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+  transform: scale(1.08);
+  opacity: 0;
+  z-index: -1;
+  filter: brightness(0.92) blur(1.5px) saturate(1.1);
+  transition: 
+    opacity 1s cubic-bezier(.16,1,.3,1),
+    transform 18s cubic-bezier(.16,1,.3,1), 
+    filter 18s cubic-bezier(.16,1,.3,1);
+}
+
+.hero__dynamic-background--active {
+  opacity: 1;
+}
+
+/* Cuando hay backgrounds dinámicos, ocultar el estático */
+.hero:has(.hero__dynamic-background)::before {
+  opacity: 0;
+}
+
+/* Fallback para navegadores sin soporte :has() */
+@supports not selector(:has(*)) {
+  .hero.has-dynamic-background::before {
+    opacity: 0;
+  }
+}
+
 @media (min-width: 64rem) {
-  .hero:hover::before {
+  .hero:hover::before,
+  .hero:hover .hero__dynamic-background {
     transform: scale(1.13) translateY(-2%);
     filter: brightness(1) blur(0.5px) saturate(1.2);
   }
 }
 
-/* 2. CONTENIDO */
+/* ─── INFORMACIÓN DINÁMICA DE PELÍCULA ─────────────────────── */
+.hero__movie-info {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  max-width: 600px;
+  width: 90%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(.16,1,.3,1);
+  z-index: 2;
+  text-align: center;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.hero__movie-info--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.movie-info__content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.movie-info__title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.movie-info__overview {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-weight: 400;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.movie-info__meta {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  flex-wrap: wrap;
+}
+
+.movie-info__year {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+}
+
+.movie-info__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.movie-info__rating i {
+  color: #000;
+  font-size: 0.85rem;
+}
+
+/* 2. CONTENIDO PRINCIPAL */
 .hero__content {
   width: 100%;
   max-width: 760px;
@@ -52,7 +177,9 @@
   animation: fadeUp 1s cubic-bezier(.16,1,.3,1) both;
   display: grid;
   gap: 2rem;
-  z-index: 1;
+  z-index: 3;
+  position: relative;
+  padding: 2rem 0;
 }
 
 @keyframes fadeUp {
@@ -217,9 +344,142 @@
   .hero__btn { font-size: 1.4rem; padding: 1.1rem 3rem; }
 }
 
-/* 11. ACCESIBILIDAD */
+/* 11. RESPONSIVE PARA INFORMACIÓN DE PELÍCULA */
+@media (max-width: 1024px) {
+  .hero__movie-info {
+    max-width: 380px;
+    padding: 1.5rem;
+  }
+  
+  .movie-info__title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero__movie-info {
+    bottom: 1rem;
+    width: 95%;
+    max-width: none;
+    padding: 1.5rem;
+  }
+  
+  .movie-info__title {
+    font-size: 1.5rem;
+  }
+  
+  .movie-info__overview {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .movie-info__meta {
+    gap: 1rem;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__content {
+    gap: 1.5rem;
+    padding: 0.5rem 0 2rem;
+  }
+  
+  .hero__movie-info {
+    padding: 1rem;
+    margin-top: 1.5rem;
+    border-radius: 15px;
+  }
+  
+  .movie-info__title {
+    font-size: 1.25rem;
+  }
+  
+  .movie-info__overview {
+    font-size: 0.85rem;
+  }
+  
+  .movie-info__year,
+  .movie-info__rating {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* 12. CONTROLES DE NAVEGACIÓN PARA BACKGROUNDS */
+.hero__nav-controls {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.75rem;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 0.75rem;
+}
+
+.hero__nav-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(.16,1,.3,1);
+  backdrop-filter: blur(8px);
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__nav-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.hero__nav-btn:hover::before {
+  opacity: 1;
+}
+
+.hero__nav-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.hero__nav-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .hero__nav-controls {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .hero__nav-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 0.8rem;
+  }
+}
+
+/* 13. ACCESIBILIDAD */
 .search-btn:focus-visible,
-.hero__btn:focus-visible {
+.hero__btn:focus-visible,
+.hero__nav-btn:focus-visible {
   outline: 2px solid var(--secondary-color, #64b4ff);
   outline-offset: 2px;
 }
