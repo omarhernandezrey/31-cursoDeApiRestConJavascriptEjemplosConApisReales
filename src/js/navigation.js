@@ -19,6 +19,12 @@ import {
   createCategoryCard,
   createCastCard,
   renderList,
+  renderListWithLoading,
+  showMoviesSkeleton,
+  showCategoriesSkeleton,
+  showCastSkeleton,
+  showMovieDetailSkeleton,
+  hideSkeleton,
 } from './dom.js';
 
 import { openTrailerModal, closeTrailerModal } from './trailerModal.js';
@@ -64,27 +70,56 @@ async function loadHomePage () {
   elements.trendingSection .classList.remove('inactive');
   elements.categoriesSection.classList.remove('inactive');
 
-  const movies = toMovies(await getTrendingMovies());
-  renderList(movies, createMovieCard, elements.trendingMoviesList);
+  // Cargar películas trending con skeleton
+  const moviesPromise = getTrendingMovies().then(toMovies);
+  const movies = await renderListWithLoading(
+    moviesPromise,
+    createMovieCard,
+    elements.trendingMoviesList,
+    showMoviesSkeleton,
+    6,
+    true // horizontal layout
+  );
   movies.forEach(m => shownIds.add(m.id));
 
-  renderList(await getCategories(), createCategoryCard, elements.categoriesList);
+  // Cargar categorías con skeleton
+  await renderListWithLoading(
+    getCategories(),
+    createCategoryCard,
+    elements.categoriesList,
+    showCategoriesSkeleton,
+    8
+  );
 }
 
 async function loadCategoryPage (id, name) {
   elements.headerCategoryTitle.textContent = name;
   showGeneric();
 
-  const { results } = await getMoviesByCategory(id);
-  renderList(results, createMovieCard, elements.moviesGrid);
+  // Cargar películas por categoría con skeleton
+  const moviesPromise = getMoviesByCategory(id).then(data => data.results);
+  await renderListWithLoading(
+    moviesPromise,
+    createMovieCard,
+    elements.moviesGrid,
+    showMoviesSkeleton,
+    12
+  );
 }
 
 async function loadSearchPage (query) {
   elements.headerCategoryTitle.textContent = `Resultados: ${query}`;
   showGeneric();
 
-  const { results } = await searchMovies(query);
-  renderList(results, createMovieCard, elements.moviesGrid);
+  // Cargar resultados de búsqueda con skeleton
+  const searchPromise = searchMovies(query).then(data => data.results);
+  await renderListWithLoading(
+    searchPromise,
+    createMovieCard,
+    elements.moviesGrid,
+    showMoviesSkeleton,
+    12
+  );
 }
 
 async function loadTrendingPage () {
@@ -92,45 +127,149 @@ async function loadTrendingPage () {
   showGeneric();
 
   page = 1; shownIds.clear();
-  const res    = await getTrendingMovies('week', page);
-  const movies = orderByDate(toMovies(res));
-  maxPage      = res.total_pages ?? Infinity;
-
-  renderList(movies, createMovieCard, elements.moviesGrid);
+  
+  // Cargar página de tendencias con skeleton
+  const trendingPromise = getTrendingMovies('week', page).then(res => {
+    const movies = orderByDate(toMovies(res));
+    maxPage = res.total_pages ?? Infinity;
+    return movies;
+  });
+  
+  const movies = await renderListWithLoading(
+    trendingPromise,
+    createMovieCard,
+    elements.moviesGrid,
+    showMoviesSkeleton,
+    16
+  );
+  
   movies.forEach(m => shownIds.add(m.id));
-
   createSentinel();
 }
 
 async function loadMovieDetail (id) {
   showDetail();
-  const m = await getMovieDetails(id);
+  
+  // Mostrar skeleton completo para detalle de película
+  showMovieDetailSkeleton(elements.movieDetailSection);
+  
+  try {
+    const m = await getMovieDetails(id);
+    
+    // Pequeño delay para mostrar skeleton
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Ocultar skeleton con fade out
+    hideSkeleton(elements.movieDetailSection, true);
+    
+    // Mostrar contenido real después del fade out
+    setTimeout(() => {
+      elements.movieDetailSection.innerHTML = `
+        <div class="movie-detail__hero"></div>
+        <div class="container">
+          <div class="movie-detail__content">
+            <div class="movie-detail__poster">
+              <img id="moviePoster" src="" alt="Poster de la película" class="movie-poster"/>
+            </div>
+            <div class="movie-detail__info">
+              <h1 id="movieDetailTitle" class="movie-title"></h1>
+              <div class="movie-meta">
+                <span id="movieRating" class="movie-rating"></span>
+                <span id="movieRuntime" class="movie-runtime"></span>
+                <span id="movieYear" class="movie-year"></span>
+              </div>
+              <div id="movieTags" class="movie-tags"></div>
+              <div id="movieExtra" class="movie-extra"></div>
+              <div class="movie-synopsis">
+                <h3>Sinopsis</h3>
+                <p id="movieDescription"></p>
+              </div>
+              <div class="movie-credits">
+                <h3>Reparto principal</h3>
+                <div id="movieCast" class="cast-grid"></div>
+              </div>
+              <div class="movie-actions">
+                <button id="watchTrailerBtn" class="btn btn--primary watch-trailer-btn">
+                  <i class="fas fa-play"></i> Ver tráiler
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="trailerModal" class="trailer-modal inactive">
+            <div class="trailer-modal__content">
+              <button id="closeModalBtn" class="trailer-modal__close" aria-label="Cerrar tráiler">
+                <i class="fas fa-times"></i>
+              </button>
+              <div id="trailerContainer" class="trailer-container"></div>
+            </div>
+          </div>
+          <div class="similar-movies">
+            <h3 class="similar-movies__title">Películas similares</h3>
+            <div id="similarMoviesList" class="similar-movies__list"></div>
+          </div>
+        </div>
+      `;
+      
+      // Reactivar referencias a elementos
+      elements.movieDetailHero = document.querySelector('.movie-detail__hero');
+      elements.moviePoster = document.getElementById('moviePoster');
+      elements.movieDetailTitle = document.getElementById('movieDetailTitle');
+      elements.movieRating = document.getElementById('movieRating');
+      elements.movieRuntime = document.getElementById('movieRuntime');
+      elements.movieYear = document.getElementById('movieYear');
+      elements.movieTags = document.getElementById('movieTags');
+      elements.movieDescription = document.getElementById('movieDescription');
+      elements.castGrid = document.getElementById('movieCast');
+      elements.watchTrailerBtn = document.getElementById('watchTrailerBtn');
+      elements.similarMoviesList = document.getElementById('similarMoviesList');
+      elements.trailerModal = document.getElementById('trailerModal');
+      elements.trailerContainer = document.getElementById('trailerContainer');
+      
+      // Cargar contenido
+      elements.movieDetailHero.style.backgroundImage =
+        `url(${getFullImageUrl(m.backdrop_path,'original')})`;
+      elements.moviePoster.src = getFullImageUrl(m.poster_path,'w500');
+      elements.moviePoster.onerror = () => (elements.moviePoster.src='./src/img/no-image.jpg');
 
-  elements.movieDetailHero.style.backgroundImage =
-    `url(${getFullImageUrl(m.backdrop_path,'original')})`;
-  elements.moviePoster.src = getFullImageUrl(m.poster_path,'w500');
-  elements.moviePoster.onerror = () => (elements.moviePoster.src='./src/img/no-image.jpg');
+      elements.movieDetailTitle.textContent = m.title;
+      elements.movieRating .innerHTML = `<i class="fas fa-star"></i> ${m.vote_average?.toFixed(1)||'N/A'} (${m.vote_count})`;
+      elements.movieRuntime.innerHTML = `<i class="fas fa-clock"></i> ${m.runtime||'N/A'} min`;
+      elements.movieYear   .innerHTML = `<i class="fas fa-calendar-alt"></i> ${m.release_date?.split('-')[0]||'N/A'}`;
 
-  elements.movieDetailTitle.textContent = m.title;
-  elements.movieRating .innerHTML = `<i class="fas fa-star"></i> ${m.vote_average?.toFixed(1)||'N/A'} (${m.vote_count})`;
-  elements.movieRuntime.innerHTML = `<i class="fas fa-clock"></i> ${m.runtime||'N/A'} min`;
-  elements.movieYear   .innerHTML = `<i class="fas fa-calendar-alt"></i> ${m.release_date?.split('-')[0]||'N/A'}`;
+      elements.movieTags.innerHTML     = m.genres.map(g=>`<span class="tag">${g.name}</span>`).join('');
+      elements.movieDescription.textContent = m.overview || 'Sin descripción disponible.';
 
-  elements.movieTags.innerHTML     = m.genres.map(g=>`<span class="tag">${g.name}</span>`).join('');
-  elements.movieDescription.textContent = m.overview || 'Sin descripción disponible.';
+      // Cargar reparto con skeleton
+      showCastSkeleton(elements.castGrid, 8);
+      setTimeout(() => {
+        hideSkeleton(elements.castGrid, true);
+        setTimeout(() => {
+          renderList(m.cast, createCastCard, elements.castGrid);
+        }, 300);
+      }, 300);
 
-  renderList(m.cast,    createCastCard,  elements.castGrid);
-  renderList(m.similar, createMovieCard, elements.similarMoviesList);
+      // Cargar películas similares con skeleton
+      showMoviesSkeleton(elements.similarMoviesList, 6, true);
+      setTimeout(() => {
+        hideSkeleton(elements.similarMoviesList, true);
+        setTimeout(() => {
+          renderList(m.similar, createMovieCard, elements.similarMoviesList);
+          elements.similarMoviesList.classList.add('mb-footer');
+        }, 300);
+      }, 600);
 
-  // 👉 Agrega margen inferior entre películas similares y footer
-  elements.similarMoviesList.classList.add('mb-footer');
+      const tKey = m.videos.find(v=>v.type==='Trailer')?.key;
+      elements.watchTrailerBtn.style.display = tKey ? 'inline-flex' : 'none';
+      if (tKey) elements.watchTrailerBtn.onclick = () => openTrailerModal(tKey);
 
-  const tKey = m.videos.find(v=>v.type==='Trailer')?.key;
-  elements.watchTrailerBtn.style.display = tKey ? 'inline-flex' : 'none';
-  if (tKey) elements.watchTrailerBtn.onclick = () => openTrailerModal(tKey);
-
-  // 👇 Scroll al inicio al cargar detalles
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll al inicio al cargar detalles
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+    
+  } catch (error) {
+    hideSkeleton(elements.movieDetailSection, false);
+    elements.movieDetailSection.innerHTML = '<p class="error-message">Error cargando detalles de la película</p>';
+  }
 }
 
 /* ═════════ 4. INFINITE SCROLL (IntersectionObserver) ═════════ */
@@ -150,23 +289,43 @@ async function loadNextPage (entries) {
   if (!entries[0].isIntersecting) return;
   if (page >= maxPage) { detachObserver(); return; }
 
-  await new Promise(r => setTimeout(r, 400));  // pausa suave
+  // Mostrar skeleton para nuevas películas
+  const loadingSkeletons = Array(6).fill(0).map(() => createMovieCardSkeleton()).join('');
+  const tempContainer = document.createElement('div');
+  tempContainer.innerHTML = loadingSkeletons;
+  tempContainer.className = 'infinite-loading-container';
+  
+  // Insertar skeleton antes del sentinel
+  const sentinel = document.getElementById('infinite-sentinel');
+  if (sentinel) {
+    elements.moviesGrid.insertBefore(tempContainer, sentinel);
+  }
+
+  await new Promise(r => setTimeout(r, 600));  // pausa para mostrar skeleton
   page += 1;
 
-  const res   = await getTrendingMovies('week', page);
-  maxPage     = res.total_pages ?? maxPage;
-  const fresh = orderByDate(toMovies(res)).filter(m => !shownIds.has(m.id));
+  try {
+    const res   = await getTrendingMovies('week', page);
+    maxPage     = res.total_pages ?? maxPage;
+    const fresh = orderByDate(toMovies(res)).filter(m => !shownIds.has(m.id));
 
-  if (!fresh.length) return;                  // si la página sólo trae repetidos, espera
+    // Remover skeleton
+    tempContainer.remove();
 
-  fresh.forEach(m => {
-    appendCard(createMovieCard(m));
-    shownIds.add(m.id);
-  });
+    if (!fresh.length) return;                  // si la página sólo trae repetidos, espera
 
-  /* ⬅️  recoloca el sentinel al final del grid para seguir observando */
-  const sentinel = document.getElementById('infinite-sentinel');
-  if (sentinel) elements.moviesGrid.appendChild(sentinel);
+    fresh.forEach(m => {
+      appendCard(createMovieCard(m));
+      shownIds.add(m.id);
+    });
+
+    /* ⬅️  recoloca el sentinel al final del grid para seguir observando */
+    if (sentinel) elements.moviesGrid.appendChild(sentinel);
+  } catch (error) {
+    // Remover skeleton en caso de error
+    tempContainer.remove();
+    console.error('Error cargando más películas:', error);
+  }
 }
 
 /* ═════════ helpers ═════════ */

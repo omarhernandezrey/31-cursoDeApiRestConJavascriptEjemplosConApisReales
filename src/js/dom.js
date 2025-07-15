@@ -78,3 +78,167 @@ export const renderList = (items, createCardFn, container) => {
     ? items.map(item => createCardFn(item)).join('')
     : '<p class="no-results">No se encontraron resultados</p>';
 };
+
+/* ─────────────────────────────────────────────────────────────────────
+   COMPONENTES SKELETON LOADING
+   ───────────────────────────────────────────────────────────────────── */
+
+export const createMovieCardSkeleton = () => `
+  <div class="movie-card-skeleton">
+    <div class="movie-card-skeleton__image skeleton"></div>
+    <div class="movie-card-skeleton__content">
+      <div class="movie-card-skeleton__title skeleton"></div>
+      <div class="movie-card-skeleton__meta">
+        <div class="movie-card-skeleton__rating skeleton"></div>
+        <div class="movie-card-skeleton__year skeleton"></div>
+      </div>
+    </div>
+  </div>
+`;
+
+export const createCategoryCardSkeleton = () => `
+  <div class="category-card-skeleton">
+    <div class="category-card-skeleton__title skeleton"></div>
+  </div>
+`;
+
+export const createCastCardSkeleton = () => `
+  <div class="cast-card-skeleton">
+    <div class="cast-card-skeleton__image skeleton"></div>
+    <div class="cast-card-skeleton__name skeleton"></div>
+    <div class="cast-card-skeleton__character skeleton"></div>
+  </div>
+`;
+
+export const createMovieDetailSkeleton = () => `
+  <div class="movie-detail-skeleton">
+    <div class="movie-detail-skeleton__hero skeleton"></div>
+    <div class="container">
+      <div class="movie-detail-skeleton__content">
+        <div class="movie-detail-skeleton__layout">
+          <div class="movie-detail-skeleton__poster skeleton"></div>
+          <div class="movie-detail-skeleton__info">
+            <div class="movie-detail-skeleton__title skeleton"></div>
+            <div class="movie-detail-skeleton__meta">
+              <div class="movie-detail-skeleton__meta-item skeleton"></div>
+              <div class="movie-detail-skeleton__meta-item skeleton"></div>
+              <div class="movie-detail-skeleton__meta-item skeleton"></div>
+            </div>
+            <div class="movie-detail-skeleton__tags">
+              <div class="movie-detail-skeleton__tag skeleton"></div>
+              <div class="movie-detail-skeleton__tag skeleton"></div>
+              <div class="movie-detail-skeleton__tag skeleton"></div>
+            </div>
+            <div class="movie-detail-skeleton__synopsis">
+              <div class="movie-detail-skeleton__synopsis-title skeleton"></div>
+              <div class="movie-detail-skeleton__synopsis-line skeleton"></div>
+              <div class="movie-detail-skeleton__synopsis-line skeleton"></div>
+              <div class="movie-detail-skeleton__synopsis-line skeleton"></div>
+              <div class="movie-detail-skeleton__synopsis-line skeleton"></div>
+            </div>
+            <div class="movie-detail-skeleton__button skeleton"></div>
+          </div>
+        </div>
+        <div class="movie-detail-skeleton__cast-title skeleton"></div>
+        <div class="movie-detail-skeleton__cast-grid">
+          ${Array(8).fill(0).map(() => createCastCardSkeleton()).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+/* ─────────────────────────────────────────────────────────────────────
+   FUNCIONES PARA MOSTRAR/OCULTAR SKELETONS
+   ───────────────────────────────────────────────────────────────────── */
+
+export const showMoviesSkeleton = (container, count = 12, isHorizontal = false) => {
+  const gridClass = isHorizontal ? 'skeleton-grid--horizontal' : 'skeleton-grid--movies';
+  const skeletons = Array(count).fill(0).map(() => createMovieCardSkeleton()).join('');
+  
+  container.innerHTML = `
+    <div class="skeleton-grid ${gridClass}">
+      ${skeletons}
+    </div>
+  `;
+};
+
+export const showCategoriesSkeleton = (container, count = 8) => {
+  const skeletons = Array(count).fill(0).map(() => createCategoryCardSkeleton()).join('');
+  
+  container.innerHTML = `
+    <div class="skeleton-grid skeleton-grid--categories">
+      ${skeletons}
+    </div>
+  `;
+};
+
+export const showCastSkeleton = (container, count = 8) => {
+  const skeletons = Array(count).fill(0).map(() => createCastCardSkeleton()).join('');
+  
+  container.innerHTML = `
+    <div class="skeleton-grid skeleton-grid--horizontal">
+      ${skeletons}
+    </div>
+  `;
+};
+
+export const showMovieDetailSkeleton = (container) => {
+  container.innerHTML = createMovieDetailSkeleton();
+};
+
+export const hideSkeleton = (container, fadeOut = true) => {
+  if (fadeOut) {
+    const skeletons = container.querySelectorAll('.skeleton, .skeleton-grid');
+    skeletons.forEach(skeleton => {
+      skeleton.classList.add('skeleton--fade-out');
+    });
+    
+    setTimeout(() => {
+      if (container.querySelector('.skeleton--fade-out')) {
+        container.innerHTML = '';
+      }
+    }, 300);
+  } else {
+    container.innerHTML = '';
+  }
+};
+
+/* ─────────────────────────────────────────────────────────────────────
+   FUNCIÓN MEJORADA PARA RENDER CON SKELETON
+   ───────────────────────────────────────────────────────────────────── */
+
+export const renderListWithLoading = async (
+  dataPromise,
+  createCardFn,
+  container,
+  skeletonFn,
+  skeletonCount = 12,
+  isHorizontal = false
+) => {
+  // Mostrar skeleton mientras carga
+  if (skeletonFn) {
+    skeletonFn(container, skeletonCount, isHorizontal);
+  }
+  
+  try {
+    const items = await dataPromise;
+    
+    // Pequeño delay para que se vea el skeleton
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Ocultar skeleton con fade out
+    hideSkeleton(container, true);
+    
+    // Mostrar contenido real después del fade out
+    setTimeout(() => {
+      renderList(items, createCardFn, container);
+    }, 300);
+    
+    return items;
+  } catch (error) {
+    hideSkeleton(container, false);
+    container.innerHTML = '<p class="error-message">Error cargando contenido</p>';
+    throw error;
+  }
+};

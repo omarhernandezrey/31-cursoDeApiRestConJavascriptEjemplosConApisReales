@@ -1,0 +1,484 @@
+/* =====================================================================
+   src/css/skeleton.css - Componentes skeleton loading para CineXpress
+   ===================================================================== */
+
+/* ─────────────────────────────────────────────────────────────────────
+   ANIMACIÓN BASE SKELETON
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, #2a2a2a) 25%,
+    var(--skeleton-highlight, #3a3a3a) 50%,
+    var(--skeleton-base, #2a2a2a) 75%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Variables de tema para skeleton */
+[data-theme="light"] {
+  --skeleton-base: #e2e5e7;
+  --skeleton-highlight: #f0f0f0;
+}
+
+[data-theme="dark"] {
+  --skeleton-base: #2a2a2a;
+  --skeleton-highlight: #3a3a3a;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA TARJETAS DE PELÍCULAS
+   ───────────────────────────────────────────────────────────────────── */
+.movie-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform var(--transition-fast);
+  height: 400px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.movie-card-skeleton:hover {
+  transform: translateY(-5px);
+}
+
+.movie-card-skeleton__image {
+  width: 100%;
+  height: 320px;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.movie-card-skeleton__content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.movie-card-skeleton__title {
+  height: 1.2rem;
+  width: 85%;
+  border-radius: 4px;
+}
+
+.movie-card-skeleton__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.movie-card-skeleton__rating {
+  height: 1rem;
+  width: 60px;
+  border-radius: 4px;
+}
+
+.movie-card-skeleton__year {
+  height: 1rem;
+  width: 40px;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA CATEGORÍAS
+   ───────────────────────────────────────────────────────────────────── */
+.category-card-skeleton {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-fast);
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-card-skeleton:hover {
+  transform: translateY(-3px);
+}
+
+.category-card-skeleton__title {
+  height: 1.5rem;
+  width: 80%;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA REPARTO
+   ───────────────────────────────────────────────────────────────────── */
+.cast-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  width: 120px;
+}
+
+.cast-card-skeleton__image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.cast-card-skeleton__name {
+  height: 1rem;
+  width: 90%;
+  border-radius: 4px;
+}
+
+.cast-card-skeleton__character {
+  height: 0.8rem;
+  width: 70%;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA DETALLE DE PELÍCULA
+   ───────────────────────────────────────────────────────────────────── */
+.movie-detail-skeleton {
+  min-height: 100vh;
+}
+
+.movie-detail-skeleton__hero {
+  height: 400px;
+  width: 100%;
+  position: relative;
+}
+
+.movie-detail-skeleton__content {
+  padding: 2rem 0;
+}
+
+.movie-detail-skeleton__layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.movie-detail-skeleton__poster {
+  width: 300px;
+  height: 450px;
+  border-radius: var(--border-radius);
+  flex-shrink: 0;
+}
+
+.movie-detail-skeleton__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.movie-detail-skeleton__title {
+  height: 2.5rem;
+  width: 60%;
+  border-radius: 6px;
+}
+
+.movie-detail-skeleton__meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.movie-detail-skeleton__meta-item {
+  height: 1.2rem;
+  width: 100px;
+  border-radius: 4px;
+}
+
+.movie-detail-skeleton__tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.movie-detail-skeleton__tag {
+  height: 1.8rem;
+  width: 80px;
+  border-radius: 20px;
+}
+
+.movie-detail-skeleton__synopsis {
+  margin-top: 1rem;
+}
+
+.movie-detail-skeleton__synopsis-title {
+  height: 1.5rem;
+  width: 120px;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.movie-detail-skeleton__synopsis-line {
+  height: 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.movie-detail-skeleton__synopsis-line:nth-child(2) { width: 100%; }
+.movie-detail-skeleton__synopsis-line:nth-child(3) { width: 95%; }
+.movie-detail-skeleton__synopsis-line:nth-child(4) { width: 87%; }
+.movie-detail-skeleton__synopsis-line:nth-child(5) { width: 60%; }
+
+.movie-detail-skeleton__cast-title {
+  height: 1.5rem;
+  width: 150px;
+  border-radius: 4px;
+  margin: 2rem 0 1rem 0;
+}
+
+.movie-detail-skeleton__cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.movie-detail-skeleton__button {
+  height: 48px;
+  width: 150px;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA LISTAS
+   ───────────────────────────────────────────────────────────────────── */
+.skeleton-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Grid para películas */
+.skeleton-grid--movies {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Grid para categorías */
+.skeleton-grid--categories {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Grid horizontal para trending */
+.skeleton-grid--horizontal {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.skeleton-grid--horizontal .movie-card-skeleton {
+  flex-shrink: 0;
+  width: 280px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   RESPONSIVE DESIGN
+   ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .movie-detail-skeleton__layout {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .movie-detail-skeleton__poster {
+    width: 240px;
+    height: 360px;
+  }
+  
+  .movie-detail-skeleton__info {
+    width: 100%;
+    align-items: center;
+  }
+  
+  .movie-detail-skeleton__title {
+    width: 80%;
+  }
+  
+  .skeleton-grid--movies {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .movie-card-skeleton {
+    max-width: 240px;
+    height: 360px;
+  }
+  
+  .movie-card-skeleton__image {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .skeleton-grid--horizontal {
+    gap: 0.5rem;
+  }
+  
+  .skeleton-grid--horizontal .movie-card-skeleton {
+    width: 200px;
+  }
+  
+  .movie-detail-skeleton__content {
+    padding: 1rem;
+  }
+  
+  .movie-detail-skeleton__layout {
+    gap: 1rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   UTILIDADES
+   ───────────────────────────────────────────────────────────────────── */
+.skeleton--hidden {
+  display: none;
+}
+
+.skeleton--fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Skeleton personalizado para diferentes tamaños */
+.skeleton--small {
+  height: 0.8rem;
+}
+
+.skeleton--medium {
+  height: 1.2rem;
+}
+
+.skeleton--large {
+  height: 2rem;
+}
+
+.skeleton--circle {
+  border-radius: 50%;
+}
+
+.skeleton--rounded {
+  border-radius: 20px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SKELETON PARA INFINITE SCROLL
+   ───────────────────────────────────────────────────────────────────── */
+.infinite-loading-container {
+  display: contents;
+}
+
+.infinite-loading-container .movie-card-skeleton {
+  animation-delay: calc(var(--i, 0) * 0.1s);
+}
+
+.infinite-loading-container .movie-card-skeleton:nth-child(1) { --i: 0; }
+.infinite-loading-container .movie-card-skeleton:nth-child(2) { --i: 1; }
+.infinite-loading-container .movie-card-skeleton:nth-child(3) { --i: 2; }
+.infinite-loading-container .movie-card-skeleton:nth-child(4) { --i: 3; }
+.infinite-loading-container .movie-card-skeleton:nth-child(5) { --i: 4; }
+.infinite-loading-container .movie-card-skeleton:nth-child(6) { --i: 5; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   MEJORAS DE ACCESIBILIDAD
+   ───────────────────────────────────────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+}
+
+/* Reducir animación para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--skeleton-base);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ESTILOS PARA MENSAJES DE ERROR
+   ───────────────────────────────────────────────────────────────────── */
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-color-secondary);
+  font-style: italic;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 2px dashed var(--border-color);
+  margin: 1rem 0;
+}
+
+.error-message:before {
+  content: '⚠️ ';
+  margin-right: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ANIMACIONES DE ENTRADA PARA CONTENIDO REAL
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-content {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.fade-in-content .movie-card,
+.fade-in-content .category-card,
+.fade-in-content .cast-card {
+  animation: fadeInUp 0.5s ease-out;
+  animation-delay: calc(var(--i, 0) * 0.05s);
+  animation-fill-mode: both;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   PERFORMANCE OPTIMIZATIONS
+   ───────────────────────────────────────────────────────────────────── */
+.skeleton {
+  will-change: background-position;
+  contain: layout style paint;
+}
+
+.skeleton-grid {
+  contain: layout;
+}
