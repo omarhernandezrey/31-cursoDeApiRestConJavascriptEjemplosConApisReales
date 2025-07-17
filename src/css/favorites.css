@@ -1,0 +1,430 @@
+/* =====================================================================
+   src/css/favorites.css - Estilos para el sistema de favoritos
+   ===================================================================== */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   1. BOTÓN DE FAVORITOS EN TARJETAS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  font-size: 1.1rem;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.movie-card:hover .favorite-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.favorite-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.favorite-btn--active {
+  background: rgba(255, 77, 121, 0.9);
+  border-color: rgba(255, 77, 121, 0.6);
+  color: white;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.favorite-btn--active:hover {
+  background: rgba(255, 77, 121, 1);
+  border-color: rgba(255, 77, 121, 0.8);
+  transform: scale(1.1);
+}
+
+.favorite-btn i {
+  transition: all 0.3s ease;
+}
+
+.favorite-btn--active i {
+  animation: heartPulse 0.6s ease-in-out;
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   2. CONTADOR DE FAVORITOS EN HEADER
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorites-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.8rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.favorites-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-color);
+}
+
+.favorites-counter {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.favorites-counter.has-favorites {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   3. SECCIÓN DE FAVORITOS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorites-section {
+  padding: 2rem 0;
+  min-height: 70vh;
+}
+
+.favorites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.favorites-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.favorites-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.favorites-search__input {
+  padding: 0.7rem 2.5rem 0.7rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 25px;
+  background: var(--bg-primary);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  width: 200px;
+  transition: all 0.3s ease;
+}
+
+.favorites-search__input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.favorites-search i {
+  position: absolute;
+  right: 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.favorites-sort {
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.favorites-sort:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.favorites-export-btn,
+.favorites-clear-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorites-export-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.favorites-clear-btn:hover {
+  border-color: #ff4757;
+  color: #ff4757;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4. ESTADÍSTICAS DE FAVORITOS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorites-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.favorites-stat {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.favorites-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.favorites-stat__number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.favorites-stat__label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. GRID DE FAVORITOS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.favorites-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.favorites-empty__content {
+  max-width: 400px;
+}
+
+.favorites-empty__content i {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.favorites-empty__content h3 {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.favorites-empty__content p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   6. NOTIFICACIONES DE FAVORITOS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.favorite-notification {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: var(--bg-primary);
+  color: var(--text-color);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  z-index: 1000;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 300px;
+}
+
+.favorite-notification--show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.favorite-notification__content {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.favorite-notification__content i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.favorite-notification__content span {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.favorite-notification__content strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   7. RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .favorites-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .favorites-controls {
+    justify-content: space-between;
+  }
+  
+  .favorites-search__input {
+    width: 160px;
+  }
+  
+  .favorites-stats {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+  
+  .favorites-stat {
+    padding: 1rem;
+  }
+  
+  .favorites-stat__number {
+    font-size: 1.5rem;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .favorite-notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-controls {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .favorites-search__input {
+    width: 100%;
+  }
+  
+  .favorites-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  
+  .favorite-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   8. TEMA OSCURO
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .favorite-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .favorite-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .favorite-notification {
+  background: var(--bg-secondary);
+  border-color: rgba(255, 255, 255, 0.1);
+}

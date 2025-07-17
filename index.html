@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="./src/css/skeleton.css"/>
   <link rel="stylesheet" href="./src/css/pagination.css"/>
   <link rel="stylesheet" href="./src/css/page-title.css"/>
+  <link rel="stylesheet" href="./src/css/favorites.css"/>
 </head>
 <body>
   <header id="header" class="header">
@@ -40,6 +41,10 @@
         <h1 class="header__title" style="cursor: pointer;" onclick="location.hash = ''">Cine<span>Xpress</span></h1>
       </div>
       <div class="header__actions">
+        <button class="favorites-btn" aria-label="Ver favoritos" title="Ver favoritos">
+          <i class="fas fa-heart"></i>
+          <span class="favorites-counter">0</span>
+        </button>
         <button class="theme-toggle" aria-label="Cambiar tema">
           <i class="fas fa-moon"></i>
         </button>
@@ -107,6 +112,57 @@
         <div id="paginationContainer" class="pagination-wrapper"></div>
       </div>
     </section>
+
+    <section class="section favorites-section inactive" id="favoritesSection">
+      <div class="container">
+        <div class="favorites-header">
+          <h2 class="section__title">Mis Favoritos</h2>
+          <div class="favorites-controls">
+            <div class="favorites-search">
+              <input type="text" placeholder="Buscar en favoritos..." class="favorites-search__input" id="favoritesSearch">
+              <i class="fas fa-search"></i>
+            </div>
+            <select class="favorites-sort" id="favoritesSort">
+              <option value="added_date">Agregado recientemente</option>
+              <option value="title">Título A-Z</option>
+              <option value="rating">Mejor calificación</option>
+              <option value="release_date">Más reciente</option>
+            </select>
+            <button class="favorites-clear-btn" id="favoritesClearBtn" title="Limpiar favoritos">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="favorites-stats">
+          <div class="favorites-stat">
+            <span class="favorites-stat__number" id="favoritesCount">0</span>
+            <span class="favorites-stat__label">Favoritos</span>
+          </div>
+          <div class="favorites-stat">
+            <span class="favorites-stat__number" id="favoritesGenres">0</span>
+            <span class="favorites-stat__label">Géneros</span>
+          </div>
+          <div class="favorites-stat">
+            <span class="favorites-stat__number" id="favoritesAvgRating">0.0</span>
+            <span class="favorites-stat__label">Rating promedio</span>
+          </div>
+        </div>
+        
+        <div class="favorites-content">
+          <div id="favoritesGrid" class="favorites-grid"></div>
+          <div class="favorites-empty inactive" id="favoritesEmpty">
+            <div class="favorites-empty__content">
+              <i class="far fa-heart"></i>
+              <h3>No tienes favoritos aún</h3>
+              <p>Comienza agregando películas a tus favoritos haciendo clic en el corazón</p>
+              <button class="btn btn--primary" onclick="location.hash = ''">Explorar películas</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <section class="movie-detail inactive" id="movieDetail">
       <div class="movie-detail__hero"></div>
@@ -177,9 +233,9 @@
   </footer>
 
   <!-- Scripts -->
-  <script type="module" src="./src/js/config.local.js"></script>
   <script type="module" src="./src/js/config.js"></script>
   <script type="module" src="./src/js/api.js"></script>
+  <script type="module" src="./src/js/favorites.js"></script>
   <script type="module" src="./src/js/dom.js"></script>
   <script type="module" src="./src/js/navigation.js"></script>
   <script type="module" src="./src/js/heroBackground.js"></script>

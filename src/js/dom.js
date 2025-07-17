@@ -47,10 +47,50 @@ export const elements = {
   trailerContainer: document.getElementById('trailerContainer'),
 };
 
-export const createMovieCard = ({ id, title, poster_path, vote_average, release_date }) => {
+export const createMovieCard = ({ id, title, poster_path, vote_average, release_date, original_title, overview, genre_ids, popularity, adult, original_language, vote_count, backdrop_path }) => {
   const year = release_date?.split('-')[0] || 'N/A';
+  
+  // Crear atributos data para el sistema de favoritos
+  const dataAttributes = [
+    `data-movie-id="${id}"`,
+    `data-movie-title="${escapeHtml(title)}"`,
+    `data-movie-original-title="${escapeHtml(original_title || title)}"`,
+    `data-movie-poster="${poster_path || ''}"`,
+    `data-movie-backdrop="${backdrop_path || ''}"`,
+    `data-movie-overview="${escapeHtml(overview || '')}"`,
+    `data-movie-release-date="${release_date || ''}"`,
+    `data-movie-rating="${vote_average || 0}"`,
+    `data-movie-vote-count="${vote_count || 0}"`,
+    `data-movie-genres="${genre_ids ? genre_ids.join(',') : ''}"`,
+    `data-movie-popularity="${popularity || 0}"`,
+    `data-movie-adult="${adult || false}"`,
+    `data-movie-language="${original_language || ''}"`
+  ].join(' ');
+  
+  // Verificar si está en favoritos de forma segura
+  let isFavorited = false;
+  let favoriteClass = 'favorite-btn';
+  let favoriteIcon = 'far fa-heart';
+  let favoriteTitle = 'Agregar a favoritos';
+  
+  try {
+    if (window.favoritesAPI && window.favoritesAPI.isFavorite) {
+      isFavorited = window.favoritesAPI.isFavorite(id);
+      if (isFavorited) {
+        favoriteClass = 'favorite-btn favorite-btn--active';
+        favoriteIcon = 'fas fa-heart';
+        favoriteTitle = 'Quitar de favoritos';
+      }
+    }
+  } catch (error) {
+    // Error silencioso, continuar sin favoritos
+  }
+  
   return `
-    <div class="movie-card" data-id="${id}">
+    <div class="movie-card" data-id="${id}" ${dataAttributes}>
+      <button class="${favoriteClass}" aria-label="${favoriteTitle}" title="${favoriteTitle}" aria-pressed="${isFavorited}">
+        <i class="${favoriteIcon}"></i>
+      </button>
       <img src="${getFullImageUrl(poster_path)}" alt="${title}" class="movie-card__img" loading="lazy" onerror="this.src='./src/img/no-image.jpg'">
       <div class="movie-card__overlay">
         <div class="movie-card__info">
@@ -64,6 +104,18 @@ export const createMovieCard = ({ id, title, poster_path, vote_average, release_
     </div>
   `;
 };
+
+// Función auxiliar para escapar HTML
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
 
 export const createCategoryCard = ({ id, name }) => `
   <div class="category-card" data-id="${id}">

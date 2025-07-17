@@ -79,6 +79,17 @@ export function setupNavigation () {
       disableInfiniteScroll();
     }
   });
+
+  // Listener para botón de favoritos (configurado de forma segura)
+  document.addEventListener('DOMContentLoaded', () => {
+    const favoritesBtn = document.querySelector('.favorites-btn');
+    if (favoritesBtn) {
+      favoritesBtn.addEventListener('click', () => {
+        location.hash = '#favorites';
+      });
+    }
+  });
+
 }
 
 /* ═════════ 2. ROUTER ═════════ */
@@ -105,6 +116,7 @@ async function handleRoute () {
   }
   else if (h.startsWith('#trends'))    await loadTrendingPage();
   else if (h.startsWith('#sagas'))     await loadSagasPage();
+  else if (h.startsWith('#favorites')) await loadFavoritesPage();
   else                                 await loadHomePage();
 }
 
@@ -681,7 +693,7 @@ async function loadMovieDetail (id) {
       const tKey = m.videos.find(v=>v.type==='Trailer')?.key;
       elements.watchTrailerBtn.style.display = tKey ? 'inline-flex' : 'none';
       if (tKey) {
-        console.log('Configurando botón de tráiler con clave:', tKey);
+        
         // Remover listener anterior si existe
         elements.watchTrailerBtn.onclick = null;
         // Limpiar listeners previos
@@ -690,11 +702,11 @@ async function loadMovieDetail (id) {
         elements.watchTrailerBtn = newBtn;
         // Agregar nuevo listener
         elements.watchTrailerBtn.addEventListener('click', () => {
-          console.log('Botón de tráiler clickeado');
+          
           openTrailerModal(tKey);
         });
       } else {
-        console.log('No se encontró tráiler para esta película');
+        
       }
 
       // Scroll al inicio al cargar detalles
@@ -810,6 +822,110 @@ function getSagaDisplayTitle(sagaName) {
   };
   
   return sagaTitles[sagaName] || `🎬 <span class="saga-title-gradient">${sagaName.toUpperCase()}</span>`;
+}
+
+async function loadFavoritesPage() {
+  try {
+    // Scroll automático al inicio de página
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    elements.pageTitleText.textContent = 'Mis Favoritos';
+    elements.genericListSection.classList.add('inactive');
+    elements.headerBackBtn.classList.remove('inactive');
+    elements.pageTitle.classList.add('inactive');
+    
+    // Mostrar sección de favoritos
+    const favoritesSection = document.getElementById('favoritesSection');
+    if (favoritesSection) {
+      favoritesSection.classList.remove('inactive');
+    }
+
+    // Cargar y mostrar favoritos de forma segura
+    if (window.favoritesAPI) {
+      const favoritesModule = await import('./favorites.js');
+      const favorites = favoritesModule.getAllFavorites();
+      
+      // Actualizar estadísticas
+      updateFavoritesStats(favorites);
+      
+      const favoritesGrid = document.getElementById('favoritesGrid');
+      const favoritesEmpty = document.getElementById('favoritesEmpty');
+      
+      if (favorites.length === 0) {
+        favoritesGrid.innerHTML = '';
+        favoritesEmpty.classList.remove('inactive');
+      } else {
+        favoritesEmpty.classList.add('inactive');
+        
+        // Mostrar skeleton
+        showMoviesSkeleton(favoritesGrid, favorites.length);
+        
+        // Delay para mostrar skeleton
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Ocultar skeleton
+        hideSkeleton(favoritesGrid, true);
+        
+        // Renderizar favoritos
+        setTimeout(() => {
+          renderList(favorites, createMovieCard, favoritesGrid);
+        }, 300);
+      }
+      
+      // Configurar listeners básicos
+      setupBasicFavoritesListeners();
+    }
+  } catch (error) {
+    const favoritesGrid = document.getElementById('favoritesGrid');
+    if (favoritesGrid) {
+      favoritesGrid.innerHTML = '<p class="error-message">Error cargando favoritos</p>';
+    }
+  }
+}
+
+function updateFavoritesStats(favorites) {
+  const favoritesCount = document.getElementById('favoritesCount');
+  const favoritesGenres = document.getElementById('favoritesGenres');
+  const favoritesAvgRating = document.getElementById('favoritesAvgRating');
+  
+  if (favoritesCount) {
+    favoritesCount.textContent = favorites.length;
+  }
+  
+  if (favoritesGenres) {
+    const uniqueGenres = new Set();
+    favorites.forEach(movie => {
+      if (movie.genre_ids) {
+        movie.genre_ids.forEach(genreId => uniqueGenres.add(genreId));
+      }
+    });
+    favoritesGenres.textContent = uniqueGenres.size;
+  }
+  
+  if (favoritesAvgRating) {
+    const avgRating = favorites.length > 0 
+      ? (favorites.reduce((sum, movie) => sum + (movie.vote_average || 0), 0) / favorites.length).toFixed(1)
+      : '0.0';
+    favoritesAvgRating.textContent = avgRating;
+  }
+}
+
+function setupBasicFavoritesListeners() {
+  // Listener para limpiar favoritos
+  const clearBtn = document.getElementById('favoritesClearBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', async () => {
+      if (confirm('¿Estás seguro de que quieres eliminar todos los favoritos?')) {
+        try {
+          const favoritesModule = await import('./favorites.js');
+          favoritesModule.clearAllFavorites();
+          location.reload();
+        } catch (error) {
+          // Error silencioso
+        }
+      }
+    });
+  }
 }
 
 async function loadSagasData() {
@@ -1060,6 +1176,13 @@ function resetView() {
   [elements.heroSection, elements.trendingSection, elements.categoriesSection,
    elements.sagasSection, elements.genericListSection, elements.movieDetailSection]
    .forEach(el => el.classList.add('inactive'));
+  
+  // También ocultar sección de favoritos
+  const favoritesSection = document.getElementById('favoritesSection');
+  if (favoritesSection) {
+    favoritesSection.classList.add('inactive');
+  }
+  
   elements.headerBackBtn.classList.add('inactive');
   elements.headerTitle.classList.remove('inactive');
   elements.pageTitle.classList.add('inactive');

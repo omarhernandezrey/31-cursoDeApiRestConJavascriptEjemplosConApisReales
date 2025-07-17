@@ -372,13 +372,12 @@ export async function getPopularSagas() {
 
 export async function getSagaMovies(sagaData) {
   try {
-    console.log(`🎬 INICIANDO BÚSQUEDA DE SAGA: ${sagaData.name}`);
-    
+      
     // Para Matrix, hacer búsqueda directa y filtrar SOLO Matrix
     if (sagaData.name === 'Matrix') {
-      console.log('Búsqueda específica para Matrix');
+      
       const searchResults = await searchMovies('matrix', 1);
-      console.log('Resultados de búsqueda Matrix:', searchResults.results.map(r => r.title));
+      
       
       const matrixMovies = searchResults.results.filter(movie => {
         const title = movie.title.toLowerCase();
@@ -390,12 +389,12 @@ export async function getSagaMovies(sagaData) {
         // Excluir documentales y otras películas no relacionadas
         const isNotDocumentary = !title.includes('documentary') && !title.includes('making of');
         
-        console.log(`Película: ${movie.title} - Es Matrix: ${isMatrix} - No es documental: ${isNotDocumentary}`);
+        
         
         return isMatrix && isNotDocumentary;
       });
       
-      console.log('Películas Matrix filtradas:', matrixMovies.map(m => m.title));
+      
       
       return {
         ...sagaData,
@@ -408,7 +407,7 @@ export async function getSagaMovies(sagaData) {
     
     // Búsqueda optimizada para Universo Marvel
     if (sagaData.name === 'Universo Marvel') {
-      console.log('Búsqueda específica para Universo Marvel');
+      
       
       // Hacer solo 2 búsquedas principales para no sobrecargar
       const searchPromises = [
@@ -464,7 +463,7 @@ export async function getSagaMovies(sagaData) {
     
     // Búsqueda optimizada para Universo DC
     if (sagaData.name === 'Universo DC') {
-      console.log('Búsqueda específica para Universo DC');
+      
       
       // Hacer búsquedas principales para DC
       const searchPromises = [
@@ -521,10 +520,10 @@ export async function getSagaMovies(sagaData) {
     
     // Para otras sagas, intentar colección primero
     if (sagaData.id && sagaData.id > 0 && sagaData.id < 99900) {
-      console.log(`Intentando obtener colección ${sagaData.id} para ${sagaData.name}`);
+      
       const collection = await getCollectionDetails(sagaData.id);
       if (collection && collection.parts && collection.parts.length > 0) {
-        console.log(`Películas de colección para ${sagaData.name}:`, collection.parts.map(p => p.title));
+        
         return {
           ...sagaData,
           movies: orderByReleaseDate(collection.parts),
@@ -536,7 +535,7 @@ export async function getSagaMovies(sagaData) {
     }
     
     // Fallback: búsqueda por término con múltiples intentos
-    console.log(`Búsqueda por término "${sagaData.searchTerm}" para ${sagaData.name}`);
+    
     
     // Buscar con términos individuales para obtener más resultados
     const searchTerms = sagaData.searchTerm.toLowerCase().split(' ');
@@ -566,7 +565,7 @@ export async function getSagaMovies(sagaData) {
     
     // Si no se encontraron películas, intentar con términos más generales
     if (allMovies.length === 0) {
-      console.log(`No se encontraron películas, intentando búsqueda más general para ${sagaData.name}`);
+      
       const fallbackTerm = getFallbackSearchTerm(sagaData.name);
       if (fallbackTerm) {
         try {
@@ -583,7 +582,7 @@ export async function getSagaMovies(sagaData) {
       index === self.findIndex(m => m.id === movie.id)
     );
     
-    console.log(`Películas filtradas para ${sagaData.name}:`, uniqueMovies.map(m => m.title));
+    
     
     return {
       ...sagaData,
