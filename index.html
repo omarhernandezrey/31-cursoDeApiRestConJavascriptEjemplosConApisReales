@@ -20,12 +20,15 @@
   <link rel="stylesheet" href="./src/css/hero.css"/>
   <link rel="stylesheet" href="./src/css/trending.css"/>
   <link rel="stylesheet" href="./src/css/categories.css"/>
+  <link rel="stylesheet" href="./src/css/sagas.css"/>
   <link rel="stylesheet" href="./src/css/movie-detail.css"/>
   <link rel="stylesheet" href="./src/css/footer.css"/>
   <link rel="stylesheet" href="./src/css/utilities.css"/>
   <link rel="stylesheet" href="./src/css/responsive.css"/>
   <link rel="stylesheet" href="./src/css/trailer-modal.css"/>
   <link rel="stylesheet" href="./src/css/skeleton.css"/>
+  <link rel="stylesheet" href="./src/css/pagination.css"/>
+  <link rel="stylesheet" href="./src/css/page-title.css"/>
 </head>
 <body>
   <header id="header" class="header">
@@ -34,8 +37,7 @@
         <i class="fas fa-arrow-left"></i>
       </button>
       <div class="header__logo">
-        <h1 class="header__title">Cine<span>Xpress</span></h1>
-        <h1 class="header__title--category inactive"></h1>
+        <h1 class="header__title" style="cursor: pointer;" onclick="location.hash = ''">Cine<span>Xpress</span></h1>
       </div>
       <div class="header__actions">
         <button class="theme-toggle" aria-label="Cambiar tema">
@@ -45,9 +47,16 @@
     </div>
   </header>
 
+  <!-- Sección de título de página -->
+  <section id="pageTitle" class="page-title inactive">
+    <div class="container">
+      <h1 id="pageTitleText" class="page-title__text"></h1>
+    </div>
+  </section>
+
   <section class="hero" id="hero">
     <div class="hero__content">
-      <h2 class="hero__title">Explora el mundo del cine</h2>
+      <h2 class="hero__title" data-text="Explora el mundo del cine">Explora el mundo del cine</h2>
       <p class="hero__subtitle">Descubre las películas más populares y tus próximas favoritas</p>
 
       <form id="searchForm" class="search-form">
@@ -82,9 +91,20 @@
       </div>
     </section>
 
+    <section class="section sagas-section" id="sagasPreview">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Sagas y Franquicias</h2>
+          <button id="viewAllSagasBtn" class="btn btn--link view-all-btn">Ver todas</button>
+        </div>
+        <div id="sagasList" class="sagas-grid"></div>
+      </div>
+    </section>
+
     <section class="section generic-list-section inactive" id="genericList">
       <div class="container">
         <div id="moviesGrid" class="movies-grid"></div>
+        <div id="paginationContainer" class="pagination-wrapper"></div>
       </div>
     </section>
 
@@ -162,6 +182,7 @@
   <script type="module" src="./src/js/api.js"></script>
   <script type="module" src="./src/js/dom.js"></script>
   <script type="module" src="./src/js/navigation.js"></script>
+  <script type="module" src="./src/js/heroBackground.js"></script>
   <script type="module" src="./src/js/main.js"></script>
   <script type="module" src="./src/js/trailerModal.js"></script>
   <script type="module" src="./src/js/theme.js"></script>

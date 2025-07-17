@@ -111,6 +111,438 @@
 .similar-movies{margin-top:2rem;}
 .similar-movies__title{font-size:1.4rem;margin-bottom:1rem;color:var(--text-color);}
 
+/* Estado cuando no hay películas similares */
+.no-similar-movies {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  margin: 1rem 0;
+}
+
+.no-similar-movies p {
+  color: var(--text-color-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ─── NUEVOS DETALLES EXTENDIDOS ─────────────────────────────── */
+
+/* Enlaces externos */
+.movie-detail__external-links {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.external-link:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-color);
+}
+
+/* Header mejorado */
+.movie-header {
+  margin-bottom: 1.5rem;
+}
+
+.movie-tagline {
+  font-style: italic;
+  color: var(--text-color-secondary);
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+.movie-original-title {
+  color: var(--text-color-secondary);
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+/* Meta información extendida */
+.movie-meta-extended {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.meta-item:last-child {
+  border-bottom: none;
+}
+
+.meta-item strong {
+  color: var(--text-color);
+  min-width: 120px;
+}
+
+.meta-item span {
+  color: var(--text-color-secondary);
+  text-align: right;
+  flex: 1;
+}
+
+/* Información financiera */
+.movie-financial-info {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.movie-financial-info h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.financial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.financial-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.financial-item strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.financial-item span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Palabras clave */
+.movie-keywords {
+  margin: 1.5rem 0;
+}
+
+.keywords-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.keyword-tag {
+  background: var(--primary-color);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Equipo técnico */
+.movie-crew-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.movie-crew-section h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.crew-roles {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.crew-role {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-color);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.crew-role strong {
+  min-width: 180px;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.crew-role span {
+  color: var(--text-color-secondary);
+  flex: 1;
+}
+
+/* Compañías productoras */
+.movie-companies {
+  margin: 2rem 0;
+}
+
+.movie-companies h3 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.companies-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.company-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.company-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  background: var(--white);
+  border-radius: 4px;
+  padding: 0.25rem;
+}
+
+.company-logo-placeholder {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color-secondary);
+  font-size: 1.2rem;
+}
+
+.company-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+/* Galería de imágenes */
+.movie-gallery {
+  margin: 2rem 0;
+}
+
+.movie-gallery h3 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.gallery-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.gallery-tab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-color-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.gallery-tab.active,
+.gallery-tab:hover {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.gallery-grid {
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.gallery-grid.active {
+  display: grid;
+}
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 16/9;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.gallery-item__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-item__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.gallery-item:hover .gallery-item__overlay {
+  opacity: 1;
+}
+
+.gallery-item__overlay i {
+  color: var(--white);
+  font-size: 1.5rem;
+}
+
+/* Reseñas */
+.movie-reviews {
+  margin: 2rem 0;
+}
+
+.movie-reviews h3 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.reviews-container {
+  display: grid;
+  gap: 1rem;
+}
+
+.review-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+}
+
+.review-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.review-card__author {
+  color: var(--text-color);
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.review-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-color-secondary);
+}
+
+.review-card__rating {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.review-card__content {
+  color: var(--text-color-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Recomendaciones */
+.recommendations {
+  margin: 2rem 0;
+}
+
+.recommendations__title {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.recommendations__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+/* Mensaje de contenido vacío */
+.no-content {
+  text-align: center;
+  color: var(--text-color-secondary);
+  font-style: italic;
+  padding: 2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin: 1rem 0;
+}
+
 /* grid heredado de trending.css pero se define por si acaso */
 .similar-movies__list{
   display:grid;
@@ -131,6 +563,124 @@
 }
 @media(min-width:120rem){
   .similar-movies__list{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.75rem;}
+}
+
+/* ─── RESPONSIVE DESIGN PARA NUEVOS ELEMENTOS ─────────────────── */
+
+@media (max-width: 768px) {
+  .movie-detail__external-links {
+    flex-direction: column;
+  }
+
+  .external-link {
+    justify-content: center;
+  }
+
+  .movie-tagline {
+    font-size: 1rem;
+  }
+
+  .movie-original-title {
+    font-size: 0.85rem;
+  }
+
+  .meta-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .meta-item span {
+    text-align: left;
+  }
+
+  .financial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crew-role {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .crew-role strong {
+    min-width: auto;
+  }
+
+  .companies-list {
+    grid-template-columns: 1fr;
+  }
+
+  .company-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .gallery-tabs {
+    justify-content: center;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .review-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .review-card__meta {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .recommendations__list {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-meta-extended {
+    padding: 0.75rem;
+  }
+
+  .movie-financial-info {
+    padding: 1rem;
+  }
+
+  .financial-item {
+    padding: 0.75rem;
+  }
+
+  .movie-crew-section {
+    padding: 1rem;
+  }
+
+  .keywords-container {
+    gap: 0.25rem;
+  }
+
+  .keyword-tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .review-card {
+    padding: 1rem;
+  }
+
+  .review-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
 }
 
 /* ─── RESPONSIVE LAYOUT ≥768 px ──────────────────────────────── */

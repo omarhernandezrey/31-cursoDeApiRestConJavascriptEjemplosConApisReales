@@ -1,0 +1,91 @@
+/* =====================================================================
+   src/css/page-title.css - Estilos para el título de página
+   ===================================================================== */
+
+.page-title {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  z-index: var(--z-index-high, 1000);
+  padding: 1.5rem 0;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.page-title.inactive {
+  display: none;
+}
+
+.page-title__text {
+  font-family: var(--font-title, 'Montserrat', sans-serif);
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: var(--text-color, #fff);
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.3px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+/* Estilos para títulos con HTML (sagas) */
+.page-title__text .saga-title-gradient {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-title {
+    padding: 1.2rem 0;
+  }
+  
+  .page-title__text {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    padding: 1rem 0;
+  }
+  
+  .page-title__text {
+    font-size: 1.2rem;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .page-title {
+  background: var(--bg-secondary);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .page-title {
+  background: var(--bg-primary);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .page-title__text {
+  color: var(--text-color);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

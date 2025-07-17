@@ -8,7 +8,7 @@
 .header__actions    { gap: .5rem; }
 .header__title,
 .header__title--category { font-size: 1.4rem; }
-.header__title--category { display: none; }
+.header__title--category { display: block; }
 
 /* 🔹  Buscador SIEMPRE visible en móviles  */
 .search-form        { display: flex; }

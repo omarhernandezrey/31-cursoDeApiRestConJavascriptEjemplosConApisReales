@@ -53,3 +53,13 @@ button { cursor: pointer; border: none; background: none; }
 :root{
   transition: background-color .3s, color .3s;
 }
+
+/* Ajustar layout para el título de página */
+.main-content {
+  transition: margin-top 0.3s ease;
+}
+
+/* Cuando hay título de página activo */
+.page-title:not(.inactive) ~ .main-content {
+  margin-top: 80px;
+}

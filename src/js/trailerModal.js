@@ -2,15 +2,21 @@
    src/js/trailerModal.js   – versión 100 % responsiva
    ===================================================== */
 
-const body      = document.body;
-const modal     = document.getElementById('trailerModal');
-const container = document.getElementById('trailerContainer');
-const closeBtn  = document.getElementById('closeModalBtn');
+const body = document.body;
 let escListener;
 
 /* ---------- API ---------- */
 export function openTrailerModal (videoKey = '') {
-  if (!modal || !container) return;
+  // Obtener referencias actuales cada vez (por si el DOM se regeneró)
+  const modal = document.getElementById('trailerModal');
+  const container = document.getElementById('trailerContainer');
+  
+  if (!modal || !container) {
+    console.warn('Modal de tráiler no encontrado:', { modal: !!modal, container: !!container });
+    return;
+  }
+  
+  console.log('Abriendo tráiler con clave:', videoKey);
 
   /* 1. Iframe dentro de un “wrapper” 16 : 9          */
   /*    – El wrapper se escala con CSS, el iframe     */
@@ -36,9 +42,13 @@ export function openTrailerModal (videoKey = '') {
 }
 
 export function closeTrailerModal () {
+  // Obtener referencias actuales cada vez
+  const modal = document.getElementById('trailerModal');
+  const container = document.getElementById('trailerContainer');
+  
   if (!modal) return;
   modal.classList.add('inactive');
-  container.innerHTML = '';        // quita iframe
+  if (container) container.innerHTML = '';        // quita iframe
   body.style.overflow = '';
 
   modal.removeEventListener('click', overlayClose);
@@ -46,5 +56,21 @@ export function closeTrailerModal () {
 }
 
 /* ---------- helpers ---------- */
-function overlayClose (e) { if (e.target === modal) closeTrailerModal(); }
-closeBtn?.addEventListener('click', closeTrailerModal);
+function overlayClose (e) { 
+  const modal = document.getElementById('trailerModal');
+  if (e.target === modal) closeTrailerModal(); 
+}
+
+// Configurar el listener del botón de cerrar de forma dinámica
+export function setupTrailerModal() {
+  const closeBtn = document.getElementById('closeModalBtn');
+  if (closeBtn) {
+    // Remover listener anterior si existe
+    closeBtn.removeEventListener('click', closeTrailerModal);
+    // Agregar nuevo listener
+    closeBtn.addEventListener('click', closeTrailerModal);
+    console.log('Modal de tráiler configurado correctamente');
+  } else {
+    console.warn('Botón de cerrar modal no encontrado');
+  }
+}
