@@ -6,8 +6,11 @@
 
 import {
   getTrendingMovies,
+  getNewMovies,
   getCategories,
   getMoviesByCategory,
+  getMoviesByYear,
+  getYearsWithMovieCounts,
   searchMovies,
   getMovieDetails,
   getRecommendationsForMovie,
@@ -25,6 +28,7 @@ import {
   createCrewCard,
   createReviewCard,
   createKeywordTag,
+  createYearFilterButton,
   createImageGalleryItem,
   formatCurrency,
   formatNumber,
@@ -52,7 +56,7 @@ let maxPage = 1;
 const shownIds = new Set();
 let observer;                       // IntersectionObserver
 let infiniteScrollEnabled = false; // Estado del scroll infinito (por defecto paginación)
-let currentListType = null;        // 'category', 'search', 'trends'
+let currentListType = null;        // 'category', 'search', 'trends', 'new-movies'
 let currentListId = null;          // ID de categoría o query de búsqueda
 
 /* ═════════ 1. LISTENERS ═════════ */
@@ -61,14 +65,24 @@ export function setupNavigation () {
   window.addEventListener('hashchange',       handleRoute, { passive:true });
 
   elements.headerBackBtn?.addEventListener('click', () => history.back());
-  elements.viewAllBtn   ?.addEventListener('click', () => (location.hash = '#trends'));
+  elements.viewAllBtn   ?.addEventListener('click', () => (location.hash = '#newmovies'));
   elements.viewAllSagasBtn?.addEventListener('click', () => (location.hash = '#sagas'));
-  elements.heroBtn      ?.addEventListener('click', () => (location.hash = '#trends'));
+  elements.heroBtn      ?.addEventListener('click', () => (location.hash = '#newmovies'));
   
   // Configurar modal de tráiler inicial
   setupTrailerModal();
 
   document.body.addEventListener('click', delegateCards, { passive:true });
+  
+  // Event delegation para botones de filtro por año
+  document.body.addEventListener('click', (e) => {
+    if (e.target.classList.contains('year-filter-btn')) {
+      const year = e.target.dataset.year;
+      if (year) {
+        location.hash = `#year=${year}`;
+      }
+    }
+  });
 
   // Listener para toggle de scroll infinito
   document.addEventListener('infiniteScrollToggle', (e) => {
@@ -115,6 +129,11 @@ async function handleRoute () {
     await loadSearchPage(cleanQuery);
   }
   else if (h.startsWith('#trends'))    await loadTrendingPage();
+  else if (h.startsWith('#newmovies')) await loadTrendingPage(); // Usa la misma función pero con diferente configuración
+  else if (h.startsWith('#year='))     {
+    const year = h.slice(6).split('?')[0]; // Extraer año y limpiar parámetros
+    await loadYearPage(parseInt(year));
+  }
   else if (h.startsWith('#sagas'))     await loadSagasPage();
   else if (h.startsWith('#favorites')) await loadFavoritesPage();
   else                                 await loadHomePage();
@@ -125,11 +144,12 @@ async function loadHomePage () {
   elements.headerTitle.classList.remove('inactive');
   elements.heroSection     .classList.remove('inactive');
   elements.trendingSection .classList.remove('inactive');
+  elements.yearFiltersSection.classList.remove('inactive');
   elements.categoriesSection.classList.remove('inactive');
   elements.sagasSection.classList.remove('inactive');
 
-  // Cargar películas trending con skeleton
-  const moviesPromise = getTrendingMovies().then(res => orderByDate(toMovies(res)));
+  // Cargar películas NUEVAS (2024-2026) con skeleton
+  const moviesPromise = getNewMovies(1).then(res => toMovies(res));
   const movies = await renderListWithLoading(
     moviesPromise,
     createMovieCard,
@@ -139,6 +159,14 @@ async function loadHomePage () {
     true // horizontal layout
   );
   movies.forEach(m => shownIds.add(m.id));
+
+  // Cargar filtros por año
+  try {
+    const yearData = await getYearsWithMovieCounts();
+    renderList(yearData, createYearFilterButton, elements.yearFiltersList);
+  } catch (error) {
+    console.error('Error cargando filtros por año:', error);
+  }
 
   // Cargar categorías con skeleton
   await renderListWithLoading(
@@ -187,8 +215,8 @@ async function loadCategoryPage (id, name) {
     // Cargar películas por categoría
     const fullData = await getMoviesByCategory(id, currentPage);
     
-    // Aplicar ordenamiento estricto por fecha
-    fullData.results = orderByDate(fullData.results || []);
+    // La API ya maneja el ordenamiento internamente
+    // fullData.results = orderByDate(fullData.results || []);
     
     // Pequeño delay para mostrar skeleton
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -233,8 +261,8 @@ async function loadSearchPage (query) {
     // Cargar resultados de búsqueda
     const fullData = await searchMovies(cleanQuery, currentPage);
     
-    // Aplicar ordenamiento estricto por fecha
-    fullData.results = orderByDate(fullData.results || []);
+    // La API ya maneja el ordenamiento internamente
+    // fullData.results = orderByDate(fullData.results || []);
     
     // Pequeño delay para mostrar skeleton
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -260,11 +288,11 @@ async function loadTrendingPage () {
   // Scroll automático al inicio de página
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  elements.pageTitleText.textContent = 'Tendencias';
+  elements.pageTitleText.textContent = 'Películas Nuevas';
   showGeneric();
 
   // Configurar estado para paginación
-  currentListType = 'trends';
+  currentListType = 'new-movies';
   currentListId = null;
   
   // Obtener página del hash
@@ -276,10 +304,10 @@ async function loadTrendingPage () {
     // Mostrar skeleton mientras se cargan los datos
     showMoviesSkeleton(elements.moviesGrid, 16);
     
-    // Cargar página de tendencias
-    const res = await getTrendingMovies('week', currentPage);
+    // Cargar SOLO películas nuevas (2024-2026) ordenadas por fecha más reciente
+    const res = await getNewMovies(currentPage);
     maxPage = res.total_pages ?? Infinity;
-    const movies = orderByDate(toMovies(res));
+    const movies = toMovies(res); // Ya vienen ordenadas por fecha DESC desde la API
     const data = { ...res, results: movies };
     
     // Pequeño delay para mostrar skeleton
@@ -296,11 +324,59 @@ async function loadTrendingPage () {
     data.results.forEach(m => shownIds.add(m.id));
     
     // Configurar paginación
-    setupPaginationForTrending(data, currentPage);
+    setupPaginationForNewMovies(data, currentPage);
   } catch (error) {
     hideSkeleton(elements.moviesGrid, false);
     elements.moviesGrid.innerHTML = '<p class="error-message">Error cargando tendencias</p>';
     console.error('Error cargando tendencias:', error);
+  }
+}
+
+async function loadYearPage(year) {
+  // Scroll automático al inicio de página
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  elements.pageTitleText.textContent = `Películas de ${year}`;
+  showGeneric();
+
+  // Configurar estado para paginación
+  currentListType = 'year';
+  currentListId = year;
+  
+  // Obtener página del hash
+  const currentPage = getPageFromHash(location.hash);
+  page = currentPage;
+  shownIds.clear();
+  
+  try {
+    // Mostrar skeleton mientras se cargan los datos
+    showMoviesSkeleton(elements.moviesGrid, 16);
+    
+    // Cargar películas del año específico
+    const res = await getMoviesByYear(year, currentPage);
+    maxPage = res.total_pages ?? Infinity;
+    const movies = toMovies(res); // Ya vienen ordenadas por fecha DESC
+    const data = { ...res, results: movies };
+    
+    // Pequeño delay para mostrar skeleton
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Ocultar skeleton con fade out
+    hideSkeleton(elements.moviesGrid, true);
+    
+    // Renderizar resultados después del fade out
+    setTimeout(() => {
+      renderList(data.results, createMovieCard, elements.moviesGrid);
+    }, 300);
+    
+    data.results.forEach(m => shownIds.add(m.id));
+    
+    // Configurar paginación
+    setupPaginationForYear(year, data, currentPage);
+  } catch (error) {
+    hideSkeleton(elements.moviesGrid, false);
+    elements.moviesGrid.innerHTML = `<p class="error-message">Error cargando películas de ${year}</p>`;
+    console.error(`Error cargando películas de ${year}:`, error);
   }
 }
 
@@ -634,14 +710,16 @@ async function loadMovieDetail (id) {
           let similarMovies = m.similar || [];
           
           // Aplicar ordenamiento estricto por fecha a películas similares
-          const sortedSimilar = orderByDate(similarMovies);
+          // La API ya maneja el ordenamiento internamente
+          const sortedSimilar = similarMovies;
           
           // Validación estricta: si no hay suficientes películas similares, obtener más
           if (sortedSimilar.length < 3) {
             try {
               // Fallback inteligente: obtener recomendaciones basadas en género
               const recommendations = await getRecommendationsForMovie(m.id, m.genres || [], 1);
-              const additionalMovies = orderByDate(toMovies(recommendations))
+              // La API ya maneja el ordenamiento internamente
+              const additionalMovies = toMovies(recommendations)
                 .filter(movie => 
                   movie.id !== parseInt(m.id) && // No incluir la película actual
                   !sortedSimilar.some(sim => sim.id === movie.id) && // No duplicar
@@ -680,7 +758,8 @@ async function loadMovieDetail (id) {
       // Cargar recomendaciones
       setTimeout(() => {
         if (m.recommendations && m.recommendations.length > 0) {
-          const sortedRecommendations = orderByDate(m.recommendations);
+          // La API ya maneja el ordenamiento internamente
+          const sortedRecommendations = m.recommendations;
           renderList(sortedRecommendations, createMovieCard, recommendationsList);
         } else {
           recommendationsList.innerHTML = '<p class="no-content">No hay recomendaciones disponibles</p>';
@@ -995,9 +1074,26 @@ async function loadNextPage (entries) {
   page += 1;
 
   try {
-    const res   = await getTrendingMovies('week', page);
-    maxPage     = res.total_pages ?? maxPage;
-    const fresh = orderByDate(toMovies(res)).filter(m => !shownIds.has(m.id));
+    // Usar API apropiada según el tipo de lista actual
+    let res;
+    if (currentListType === 'new-movies') {
+      res = await getNewMovies(page);
+    } else if (currentListType === 'trends') {
+      res = await getTrendingMovies('week', page);
+    }
+    
+    maxPage = res.total_pages ?? maxPage;
+    
+    // Procesar películas según el tipo
+    let processedMovies;
+    if (currentListType === 'new-movies') {
+      processedMovies = toMovies(res); // Ya vienen ordenadas por fecha DESC
+    } else {
+      // La API ya maneja el ordenamiento internamente
+      processedMovies = toMovies(res);
+    }
+    
+    const fresh = processedMovies.filter(m => !shownIds.has(m.id));
 
     // Remover skeleton
     tempContainer.remove();
@@ -1020,23 +1116,6 @@ async function loadNextPage (entries) {
 
 /* ═════════ helpers ═════════ */
 function toMovies(res){ return Array.isArray(res) ? res : res.results ?? []; }
-function orderByDate(arr) { 
-  return [...arr].sort((a, b) => {
-    // Ordenamiento estricto: más nueva primero, más antigua al final
-    const dateA = a.release_date || '1900-01-01'; // Fecha por defecto para películas sin fecha
-    const dateB = b.release_date || '1900-01-01';
-    
-    // Comparación descendente (más nueva primero)
-    const comparison = dateB.localeCompare(dateA);
-    
-    // Si las fechas son iguales, ordenar por popularidad (vote_average) como criterio secundario
-    if (comparison === 0) {
-      return (b.vote_average || 0) - (a.vote_average || 0);
-    }
-    
-    return comparison;
-  }); 
-}
 function appendCard(c){ c && (c.nodeType ? elements.moviesGrid.appendChild(c) : elements.moviesGrid.insertAdjacentHTML('beforeend', c)); }
 
 // Función para limpiar títulos de parámetros URL
@@ -1143,10 +1222,65 @@ function setupPaginationForTrending(data, currentPage) {
   }
 }
 
+function setupPaginationForNewMovies(data, currentPage) {
+  const onPageChange = (newPage) => {
+    scrollToTop();
+    const baseHash = '#newmovies';
+    const newHash = updateHashWithPage(baseHash, newPage);
+    location.hash = newHash;
+  };
+
+  renderPagination(
+    elements.paginationContainer,
+    currentPage,
+    data.total_pages,
+    onPageChange,
+    {
+      totalResults: data.total_results,
+      resultsPerPage: 20,
+      infiniteScrollEnabled: false, // FORZAR paginación normal
+      showModeToggle: true
+    }
+  );
+
+  // FORZAR mostrar paginación siempre
+  if (elements.paginationContainer) {
+    elements.paginationContainer.style.display = 'block';
+    console.log('Paginación forzada para películas nuevas');
+  }
+}
+
+function setupPaginationForYear(year, data, currentPage) {
+  const onPageChange = (newPage) => {
+    scrollToTop();
+    const baseHash = `#year=${year}`;
+    const newHash = updateHashWithPage(baseHash, newPage);
+    location.hash = newHash;
+  };
+
+  renderPagination(
+    elements.paginationContainer,
+    currentPage,
+    data.total_pages,
+    onPageChange,
+    {
+      totalResults: data.total_results,
+      resultsPerPage: 20,
+      infiniteScrollEnabled: false, // Paginación normal para años
+      showModeToggle: false
+    }
+  );
+
+  // Mostrar paginación siempre
+  if (elements.paginationContainer) {
+    elements.paginationContainer.style.display = 'block';
+  }
+}
+
 /* ═════════ FUNCIONES DE SCROLL INFINITO ═════════ */
 
 function enableInfiniteScroll() {
-  if (currentListType === 'trends') {
+  if (currentListType === 'new-movies' || currentListType === 'trends') {
     // Ocultar paginación y mostrar scroll infinito
     if (elements.paginationContainer) {
       elements.paginationContainer.style.display = 'none';
@@ -1173,7 +1307,7 @@ function disableInfiniteScroll() {
 /* ═════════ ACTUALIZACIÓN DE VISTA PARA PAGINACIÓN ═════════ */
 
 function resetView() {
-  [elements.heroSection, elements.trendingSection, elements.categoriesSection,
+  [elements.heroSection, elements.trendingSection, elements.yearFiltersSection, elements.categoriesSection,
    elements.sagasSection, elements.genericListSection, elements.movieDetailSection]
    .forEach(el => el.classList.add('inactive'));
   

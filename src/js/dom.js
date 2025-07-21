@@ -25,6 +25,10 @@ export const elements = {
   sagasList: document.getElementById('sagasList'),
   viewAllSagasBtn: document.getElementById('viewAllSagasBtn'),
 
+  // Filtros por año
+  yearFiltersSection: document.getElementById('yearFiltersSection'),
+  yearFiltersList: document.getElementById('yearFiltersList'),
+
   genericListSection: document.getElementById('genericList'),
   moviesGrid: document.getElementById('moviesGrid'),
   paginationContainer: document.getElementById('paginationContainer'),
@@ -213,6 +217,17 @@ export const createReviewCard = ({ author, content, created_at, author_details }
 export const createKeywordTag = (keyword) => `
   <span class="keyword-tag">${keyword.name}</span>
 `;
+
+export const createYearFilterButton = (yearData) => {
+  const { year, count } = yearData;
+  const countText = count > 0 ? `${count} películas` : '';
+  
+  return `
+    <button class="year-filter-btn" data-year="${year}" data-count="${countText}">
+      ${year}
+    </button>
+  `;
+};
 
 export const createImageGalleryItem = ({ file_path, aspect_ratio }, type = 'backdrop') => `
   <div class="gallery-item" data-src="${getFullImageUrl(file_path, 'w780')}">

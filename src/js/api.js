@@ -15,11 +15,186 @@ const api = window.axios.create({
 });
 
 /* ────────────────────────────────────────────────────────────
-   1.  TENDENCIAS
+   1.  TENDENCIAS Y PELÍCULAS NUEVAS
    ──────────────────────────────────────────────────────────── */
 export async function getTrendingMovies (timeWindow = 'day', page = 1) {
   const { data } = await api(`trending/movie/${timeWindow}`, { params:{ page } });
   return normaliseListResponse(data);
+}
+
+// Función DEFINITIVA para obtener películas nuevas con ordenamiento PERFECTO
+export async function getNewMovies(page = 1) {
+  const currentYear = new Date().getFullYear();
+  const resultsPerPage = 20;
+  
+  // Sistema dinámico: siempre los últimos 2 años + año actual + próximo año
+  const startDate = `${currentYear - 1}-01-01`; 
+  const endDate = `${currentYear + 1}-12-31`;
+  
+  try {
+    // Estrategia: Pedir las primeras 3 páginas para obtener un pool grande de películas
+    const pagesToFetch = Math.min(3, page === 1 ? 3 : page + 1);
+    const requests = [];
+    
+    for (let i = 1; i <= pagesToFetch; i++) {
+      requests.push(
+        api('discover/movie', {
+          params: {
+            page: i,
+            'primary_release_date.gte': startDate,
+            'primary_release_date.lte': endDate,
+            'sort_by': 'release_date.desc', // Simplificar el sort_by
+            'vote_count.gte': 3, // Muy bajo para capturar todo
+            'include_adult': false,
+            'include_video': false,
+            'language': 'es-ES'
+          }
+        })
+      );
+    }
+    
+    const responses = await Promise.all(requests);
+    
+    // Combinar todas las películas
+    let allMovies = [];
+    let totalPages = 1;
+    let totalResults = 0;
+    
+    responses.forEach(response => {
+      const data = response.data;
+      allMovies = allMovies.concat(data.results || []);
+      totalPages = Math.max(totalPages, data.total_pages || 1);
+      totalResults = Math.max(totalResults, data.total_results || 0);
+    });
+    
+    // Eliminar duplicados por ID
+    const uniqueMovies = allMovies.filter((movie, index, self) => 
+      index === self.findIndex(m => m.id === movie.id)
+    );
+    
+    // ORDENAMIENTO ULTRA ESTRICTO POR FECHA
+    const sortedMovies = uniqueMovies.sort((a, b) => {
+      const dateA = new Date(a.release_date || '1900-01-01');
+      const dateB = new Date(b.release_date || '1900-01-01');
+      
+      // Ordenar por fecha (más reciente primero)
+      if (dateB.getTime() !== dateA.getTime()) {
+        return dateB.getTime() - dateA.getTime();
+      }
+      
+      // Criterio secundario: popularidad
+      return (b.popularity || 0) - (a.popularity || 0);
+    });
+    
+    // Paginación manual
+    const startIndex = (page - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    const paginatedMovies = sortedMovies.slice(startIndex, endIndex);
+    
+    // Calcular páginas totales basado en nuestros resultados ordenados
+    const calculatedTotalPages = Math.ceil(sortedMovies.length / resultsPerPage);
+    
+    // DEBUG: Mostrar ordenamiento
+    console.log(`🎬 Página ${page} - Películas ordenadas por fecha (más reciente primero):`);
+    paginatedMovies.slice(0, 5).forEach((movie, index) => {
+      console.log(`${startIndex + index + 1}. ${movie.title} - ${movie.release_date}`);
+    });
+    console.log(`📅 Filtro: ${startDate} a ${endDate} | Total: ${sortedMovies.length} películas | Páginas: ${calculatedTotalPages}`);
+    
+    return {
+      page,
+      results: paginatedMovies,
+      total_pages: calculatedTotalPages,
+      total_results: sortedMovies.length
+    };
+    
+  } catch (error) {
+    console.error('Error obteniendo películas nuevas:', error);
+    return {
+      page,
+      results: [],
+      total_pages: 1,
+      total_results: 0
+    };
+  }
+}
+
+// Función para obtener películas por año específico
+export async function getMoviesByYear(year, page = 1) {
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+  
+  try {
+    const { data } = await api('discover/movie', {
+      params: {
+        page,
+        'primary_release_date.gte': startDate,
+        'primary_release_date.lte': endDate,
+        'sort_by': 'release_date.desc,popularity.desc',
+        'vote_count.gte': 3,
+        'include_adult': false,
+        'include_video': false,
+        'language': 'es-ES'
+      }
+    });
+    
+    return normaliseListResponse(data);
+  } catch (error) {
+    console.error(`Error obteniendo películas de ${year}:`, error);
+    return {
+      page,
+      results: [],
+      total_pages: 1,
+      total_results: 0
+    };
+  }
+}
+
+// Función para obtener conteo de películas por años (para mostrar en botones)
+export async function getYearsWithMovieCounts() {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  
+  // Generar años desde currentYear hacia atrás hasta 2000
+  for (let year = currentYear; year >= 2000; year--) {
+    years.push(year);
+  }
+  
+  try {
+    // Obtener conteos para los primeros 8 años (los más relevantes)
+    const yearPromises = years.slice(0, 8).map(async (year) => {
+      try {
+        const data = await getMoviesByYear(year, 1);
+        return {
+          year,
+          count: data.total_results || 0,
+          hasMovies: (data.total_results || 0) > 0
+        };
+      } catch (error) {
+        return {
+          year,
+          count: 0,
+          hasMovies: false
+        };
+      }
+    });
+    
+    const yearCounts = await Promise.all(yearPromises);
+    
+    // Filtrar solo años con películas y ordenar por año descendente
+    return yearCounts
+      .filter(item => item.hasMovies && item.count > 10) // Solo años con suficientes películas
+      .sort((a, b) => b.year - a.year);
+      
+  } catch (error) {
+    console.error('Error obteniendo conteos por años:', error);
+    // Fallback: retornar años básicos sin conteo
+    return years.slice(0, 6).map(year => ({
+      year,
+      count: 0,
+      hasMovies: true
+    }));
+  }
 }
 
 /* ────────────────────────────────────────────────────────────

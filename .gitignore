@@ -108,3 +108,4 @@ src/secrets.js
 src/js/config.local.js
 # Configuración local (ya eliminada)
 src/js/config.local.js
+.vercel

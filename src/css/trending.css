@@ -138,31 +138,109 @@
   .movie-card__meta {font-size:.9rem;}
 }
 
-/* ===== 7. BOTÓN “VER TODAS” ===== */
-.view-all-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:.35rem;
-  font-size:1rem;
-  font-weight:600;
-  color:var(--primary-color);
-  background:transparent;
-  padding:.4rem 1rem;
-  border-radius:30px;
-  border:2px solid transparent;
-  transition:color .25s, background .25s, box-shadow .25s;
+/* ===== 7. BOTÓN "VER TODAS" MEJORADO ===== */
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color), #ff6b78);
+  padding: .8rem 2rem;
+  border-radius: 50px;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: var(--transition-magic);
+  z-index: 1;
 }
-.view-all-btn:hover,
-.view-all-btn:focus-visible{
-  background:rgba(var(--primary-rgb),.15);
-  box-shadow:0 0 8px rgba(var(--primary-rgb),.6);
-  outline:none;
+
+.view-all-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+  z-index: -1;
 }
-[data-theme="light"] .view-all-btn{
-  color:var(--primary-dark);
+
+.view-all-btn::after {
+  content: '→';
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-left: .3rem;
+  transition: transform 0.3s ease;
 }
-[data-theme="light"] .view-all-btn:hover{
-  background:rgba(var(--primary-rgb),.2);
+
+.view-all-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: var(--neon-effect), 0 8px 25px rgba(var(--primary-rgb), 0.6);
+  background: linear-gradient(135deg, #ff6b78, var(--secondary-color));
+  border-color: var(--secondary-color);
+}
+
+.view-all-btn:hover::before {
+  left: 100%;
+}
+
+.view-all-btn:hover::after {
+  transform: translateX(5px);
+}
+
+.view-all-btn:active {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 2px 10px rgba(var(--primary-rgb), 0.8);
+}
+
+.view-all-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--golden-glow), 0 0 0 3px rgba(255,215,0,0.5);
+}
+
+/* Animación de pulso continuo */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.7);
+  }
+}
+
+.view-all-btn {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Contenedor del botón CTA */
+.trending-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+}
+
+/* Tema claro */
+[data-theme="light"] .view-all-btn {
+  background: linear-gradient(135deg, var(--primary-dark), #ff6b78);
+  border-color: var(--primary-dark);
+  box-shadow: 0 4px 15px rgba(214,45,60, 0.4);
+}
+
+[data-theme="light"] .view-all-btn:hover {
+  background: linear-gradient(135deg, #ff6b78, var(--primary-color));
+  box-shadow: 0 0 12px rgba(214,45,60,.8), 0 0 24px rgba(214,45,60,.5), 0 8px 25px rgba(214,45,60, 0.6);
 }
 /* ===== FIX: que el header no tape la vista “Ver todas” ===== */
 #genericList{                          /* sección que se muestra al pulsar “Ver todas” */

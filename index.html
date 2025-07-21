@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="./src/css/hero.css"/>
   <link rel="stylesheet" href="./src/css/trending.css"/>
   <link rel="stylesheet" href="./src/css/categories.css"/>
+  <link rel="stylesheet" href="./src/css/year-filters.css"/>
   <link rel="stylesheet" href="./src/css/sagas.css"/>
   <link rel="stylesheet" href="./src/css/movie-detail.css"/>
   <link rel="stylesheet" href="./src/css/footer.css"/>
@@ -80,11 +81,23 @@
     <section class="section trending-section" id="trendingPreview">
       <div class="container">
         <div class="section__header">
-          <h2 class="section__title">Tendencias</h2>
-          <button id="viewAllBtn" class="btn btn--link view-all-btn">Ver todas</button>
+          <h2 class="section__title">Películas Nuevas</h2>
         </div>
         <div class="trending-movies">
           <div id="trendingMoviesList" class="trending-movies__list"></div>
+        </div>
+        <div class="trending-cta">
+          <button id="viewAllBtn" class="btn btn--link view-all-btn">Ver todas las nuevas</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nueva sección de filtros por año -->
+    <section class="section year-filters-section" id="yearFiltersSection">
+      <div class="container">
+        <h2 class="section__title">Películas por Año</h2>
+        <div class="year-filters">
+          <div id="yearFiltersList" class="year-filters__list"></div>
         </div>
       </div>
     </section>
@@ -100,9 +113,11 @@
       <div class="container">
         <div class="section__header">
           <h2 class="section__title">Sagas y Franquicias</h2>
-          <button id="viewAllSagasBtn" class="btn btn--link view-all-btn">Ver todas</button>
         </div>
         <div id="sagasList" class="sagas-grid"></div>
+        <div class="sagas-cta">
+          <button id="viewAllSagasBtn" class="btn btn--link view-all-btn">Ver todas las sagas</button>
+        </div>
       </div>
     </section>
 

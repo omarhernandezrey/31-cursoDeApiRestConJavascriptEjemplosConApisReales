@@ -8,18 +8,6 @@
 
 import { getTrendingMovies, getFullImageUrl } from './api.js';
 
-// Función local de ordenamiento por fecha
-function orderByDate(arr) { 
-  return [...arr].sort((a, b) => {
-    const dateA = a.release_date || '1900-01-01';
-    const dateB = b.release_date || '1900-01-01';
-    const comparison = dateB.localeCompare(dateA);
-    if (comparison === 0) {
-      return (b.vote_average || 0) - (a.vote_average || 0);
-    }
-    return comparison;
-  }); 
-}
 
 class HeroBackgroundManager {
   constructor() {
@@ -72,8 +60,8 @@ class HeroBackgroundManager {
         index === self.findIndex(m => m.id === movie.id)
       );
 
-      // Filtrar películas con backgrounds de calidad y ordenar por fecha
-      this.backgroundImages = orderByDate(uniqueMovies)
+      // Filtrar películas con backgrounds de calidad (la API ya maneja el ordenamiento)
+      this.backgroundImages = uniqueMovies
         .filter(movie => 
           movie.backdrop_path && 
           movie.vote_average > 6.5 && // Solo películas bien valoradas
